@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug32</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F4684117-6C67-4703-A26B-7BF9D533832B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StudioAvw.Voxels</RootNamespace>
+    <AssemblyName>VoxelTools</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.DayOfYearStamp.TimeStamp</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>None.None.DayOfYearStamp.TimeStamp</AssemblyFileVersionSettings>
+    <AssemblyInfoVersionSettings>None.None.DayOfYearStamp.TimeStamp</AssemblyInfoVersionSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="VoxelToolsAssemblyInfo.cs" />
+    <Compile Include="Components\PixelGrid\PixelGridPixelateComponent.cs" />
+    <Compile Include="Components\PixelGrid\PixelGridCreateComponent.cs" />
+    <Compile Include="Components\PixelGrid\PixelGridToList.cs" />
+    <Compile Include="Components\PixelGrid\PixelGridMesh.cs" />
+    <Compile Include="Components\ScalarGrid\GH_ScalarComponent.cs" />
+    <Compile Include="Components\ScalarGrid\ScalarGridAddBrepComponent.cs" />
+    <Compile Include="Components\ScalarGrid\ScalarGridCreateComponent.cs" />
+    <Compile Include="Components\ScalarGrid\ScalarGridVisualizeComponent.cs" />
+    <Compile Include="Components\ScalarGrid\ScalarGridMarchingCubesHull.cs" />
+    <Compile Include="Components\VoxelGrid\GH_VoxelComponent.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridAccessibleRoof.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridVoxelateComponent.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridBoxes.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridCreateComponent.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridExclusive.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridFromHex.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridFromList.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridIntersect.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridInvert.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridJoin.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridLimiter.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridMarchingCubesHull.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridMeshHull.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridStatistics.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridSubtract.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridToHex.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridToList.cs" />
+    <Compile Include="Images.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Images.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Param\Param_PixelGrid.cs" />
+    <None Include="Tools\CutmallClark.csnc" />
+    <Compile Include="Tools\DataAccessHelper.cs" />
+    <Compile Include="Tools\GeometryHelper.cs" />
+    <Compile Include="Tools\PixelGridMeshHelper.cs" />
+    <Compile Include="Types\GH_PixelGrid.cs" />
+    <Compile Include="Param\Param_ScalarGrid.cs" />
+    <Compile Include="Param\Param_VoxelGrid.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\ByteHelper.cs" />
+    <Compile Include="Tools\BrepHelper.cs" />
+    <Compile Include="Tools\ComponentHelper.cs" />
+    <Compile Include="Tools\VoxelGridMeshHelper.cs" />
+    <Compile Include="Tools\RenderHelper.cs" />
+    <Compile Include="Types\GH_ScalarGrid.cs" />
+    <Compile Include="Types\GH_VoxelGrid.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_ConstructFromList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_CreateGrid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_Decompose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridDifference.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridIntersect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridInverse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridToList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridUnion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_GridXOR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_VoxelateBrep.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_Statistics.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\VT_PointCloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_ConstructFromList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_CreateGrid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Decompose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridDifference.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridIntersect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridInverse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridToList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridUnion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_GridXOR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_PointCloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Statistics.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_VoxelateBrep.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Compare.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Intersect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Invert.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Join.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_Subtract.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_ToList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST_XOR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ScalarTools\ST-11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VoxelGeometry\VoxelGeometry.csproj">
+      <Project>{58e945da-0909-4f25-890e-3fabea67fdc9}</Project>
+      <Name>VoxelGeometry</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grasshopper">
+      <Version>0.9.76</Version>
+    </PackageReference>
+    <PackageReference Include="RhinoCommon">
+      <Version>5.12.50810.13095</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).gha"
+Erase "$(TargetPath)"
+Erase "$(TargetDir)RhinoCommon.dll"
+Erase "$(TargetDir)Grasshopper.dll"
+Erase "$(TargetDir)GH_IO.dll"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartArguments>
+    </StartArguments>
+    <StartAction>Program</StartAction>
+    <StartProgram>c:\Program Files (x86)\Rhinoceros 5.0\System\Rhino4.exe</StartProgram>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FallbackCulture>en-US</FallbackCulture>
+  </PropertyGroup>
+</Project>

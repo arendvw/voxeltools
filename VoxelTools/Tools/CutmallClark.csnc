@@ -1,0 +1,316 @@
+﻿using Rhino;
+using Rhino.Geometry;
+using Rhino.DocObjects;
+using Rhino.Collections;
+
+using GH_IO;
+using GH_IO.Serialization;
+using Grasshopper;
+using Grasshopper.Kernel;
+using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Types;
+
+using System;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Linq;
+using System.Data;
+using System.Drawing;
+using System.Reflection;
+using System.Collections;
+using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+
+
+/// <summary>
+/// This class will be instantiated on demand by the Script component.
+/// </summary>
+public class Script_Instance : GH_ScriptInstance
+{
+    #region Utility functions
+    /// <summary>Print a String to the [Out] Parameter of the Script component.</summary>
+    /// <param name="text">String to print.</param>
+    private void Print(string text) { /* Implementation hidden. */ }
+    /// <summary>Print a formatted String to the [Out] Parameter of the Script component.</summary>
+    /// <param name="format">String format.</param>
+    /// <param name="args">Formatting parameters.</param>
+    private void Print(string format, params object[] args) { /* Implementation hidden. */ }
+    /// <summary>Print useful information about an object instance to the [Out] Parameter of the Script component. </summary>
+    /// <param name="obj">Object instance to parse.</param>
+    private void Reflect(object obj) { /* Implementation hidden. */ }
+    /// <summary>Print the signatures of all the overloads of a specific method to the [Out] Parameter of the Script component. </summary>
+    /// <param name="obj">Object instance to parse.</param>
+    private void Reflect(object obj, string method_name) { /* Implementation hidden. */ }
+    #endregion
+
+    #region Members
+    /// <summary>Gets the current Rhino document.</summary>
+    private readonly RhinoDoc RhinoDocument;
+    /// <summary>Gets the Grasshopper document that owns this script.</summary>
+    private readonly GH_Document GrasshopperDocument;
+    /// <summary>Gets the Grasshopper script component that owns this script.</summary>
+    private readonly IGH_Component Component;
+    /// <summary>
+    /// Gets the current iteration count. The first call to RunScript() is associated with Iteration==0.
+    /// Any subsequent call within the same solution will increment the Iteration count.
+    /// </summary>
+    private readonly int Iteration;
+    #endregion
+
+    /// <summary>
+    /// This procedure contains the user code. Input parameters are provided as regular arguments,
+    /// Output parameters as ref arguments. You don't have to assign output parameters,
+    /// they will have a default value.
+    /// </summary>
+    private void RunScript(Mesh M, ref object A)
+    {
+        //http://www.algosome.com/articles/catmull-clark-subdivision-algorithm.html
+        //http://www.rorydriscoll.com/2008/08/01/catmull-clark-subdivision-the-basics/
+        //http://lotsacode.wordpress.com/2013/04/10/catmull-clark-surface-subdivider-in-c/
+        //http://rosettacode.org/wiki/Catmull%E2%80%93Clark_subdivision_surface
+        //1 face centers
+
+        Mesh m = M;
+
+        List<FaceData> _faces = new List<FaceData>();
+        List<EdgeData> _edges = new List<EdgeData>();
+        List<VertexData> _vertices = new List<VertexData>();
+
+        // initiate vertices
+        // initiate edges
+        // initiate faces
+        
+        bool[] isNaked = m.GetNakedEdgePointStatus();
+        for (int i = 0; i < m.Vertices.Count; i++)
+        {
+            _vertices.Add(new VertexData(m, i, isNaked[i]));
+        }
+
+        for (int i = 0; i < m.TopologyEdges.Count; i++)
+        {
+            IndexPair vertices = m.TopologyEdges.GetTopologyVertices(i);
+            VertexData vda = _vertices[vertices.I];
+            VertexData vdb = _vertices[vertices.J];
+            bool isEdgeNaked = false;
+            if (vda.IsNaked && vdb.IsNaked)
+            {
+                isEdgeNaked = true;
+            }
+            _edges.Add(
+              new EdgeData(i, isEdgeNaked, m.TopologyEdges.EdgeLine(i), new VertexData[2] { vda, vdb })
+            );
+        }
+
+        for (int i = 0; i < m.Faces.Count; i++)
+        {
+            VertexData[] vertices = new VertexData[0];
+            MeshFace mf = m.Faces[i];
+            if (mf.IsQuad) 
+            {
+                vertices = new VertexData[4] { _vertices[mf.A], _vertices[mf.B], _vertices[mf.C], _vertices[mf.D] };
+            } else {
+                vertices = new VertexData[3] { _vertices[mf.A], _vertices[mf.B], _vertices[mf.C] };
+            }
+
+            int[] edgeIndices = m.TopologyEdges.GetEdgesForFace(i);
+            List<EdgeData> edges = new List<EdgeData> ();
+            foreach (int edgeIndex in edgeIndices)
+            {
+                edges.Add(_edges[edgeIndex]);
+            }
+
+            _faces.Add(new FaceData(i, vertices, edges));
+        }
+
+        _edges.ForEach(e => e.Calculate());
+        _vertices.ForEach(v => v.Calculate());
+
+        Mesh dividedMesh = new Mesh();
+        _vertices.ForEach(v => v.AddToMesh(dividedMesh));
+        _edges.ForEach(e=> e.AddLocationToMesh(dividedMesh));
+        _faces.ForEach(f=>f.CreateFaces(dividedMesh));
+
+
+        dividedMesh.Normals.ComputeNormals();
+        dividedMesh.Compact();
+        A = dividedMesh;
+    }
+
+    // <Custom additional code> 
+    class FaceData
+    {
+        public int Index;
+        List<VertexData> Vertices = new List<VertexData>();
+        List<EdgeData> Edges = new List<EdgeData> ();
+        public Point3d Location;
+        int LocationIndex;
+
+        public FaceData (int index, IEnumerable<VertexData> vertices, IEnumerable<EdgeData> edges)
+	    {
+            this.Index = index;
+            this.Vertices.AddRange(vertices);
+            this.Edges.AddRange(edges);
+
+            List<Point3d> vPoints = new List<Point3d> ();
+            foreach (VertexData vertex in Vertices)
+            {
+                vertex.Faces.Add(this);
+                vPoints.Add(vertex.OriginalLocation);
+            }
+            this.Location = Tools.Average(vPoints);
+
+            foreach (EdgeData edge in Edges)
+            {
+                edge.Faces.Add(this);
+            }
+	    }
+
+
+        public void CreateFaces(Mesh newMesh)
+        {
+            LocationIndex = newMesh.Vertices.Add(Location);
+            
+            // For each edge add a quad face.
+            int valence = Edges.Count;
+            int j = valence - 1;
+            for (int i = 0; i < valence; i++)
+            {
+                List<int> newIndices = new List<int>();
+                newIndices.Add(Vertices[i].LocationIndex);
+
+                // wrap logic
+                j++;
+                if (j >= Edges.Count)
+                {
+                    j = 0;
+                }
+                // end of wrap logic.
+                newIndices.Add(Edges[i].LocationIndex);
+                newIndices.Add(this.LocationIndex);
+                newIndices.Add(Edges[j].LocationIndex);
+                newMesh.Faces.AddFace(newIndices[0], newIndices[1], newIndices[2], newIndices[3]);
+            }
+        }
+    }
+
+    class EdgeData
+    {
+        public int Index { get; private set; }
+        public Point3d Location { get; private set; }
+        public Point3d Mid { get; private set; }
+        public bool IsNaked { get; private set; }
+        public bool IsAdded { get; private set; }
+        public int LocationIndex { get; private set; }
+        public List<VertexData> Vertices = new List<VertexData>();
+        public List<FaceData> Faces = new List<FaceData>();
+
+        public EdgeData(int id, bool isNaked, Line line, IEnumerable<VertexData> vertices)
+        {
+            this.Index = id;
+            this.IsNaked = isNaked;
+            this.Vertices.AddRange(vertices);
+            this.Mid = line.PointAt(0.5);
+            foreach (VertexData vd in Vertices)
+            {
+                vd.Edges.Add(this);
+            }
+        }
+
+        public void Calculate()
+        {
+            // if naked: don't take the face into account
+            if (IsNaked)
+            {
+                this.Location = this.Mid;
+            }
+            else
+            {
+                List<Point3d> vertexPoints = new List<Point3d>();
+                vertexPoints.AddRange(Vertices.Select(x => x.OriginalLocation));
+                vertexPoints.AddRange(Faces.Select(x => x.Location));
+                this.Location = Tools.Average(vertexPoints);
+            }
+        }
+
+        public void AddLocationToMesh(Mesh m)
+        {
+            if (!IsAdded)
+            {
+                LocationIndex = m.Vertices.Add(this.Location);
+                IsAdded = true;
+            }
+        }
+    }
+
+    class VertexData
+    {
+        public VertexData(Mesh m, int index, bool isNaked)
+        {
+            this.Index = index;
+            this.OriginalLocation = m.Vertices[index];
+            this.IsNaked = isNaked;
+        }
+
+        public int Index { get; private set; }
+        public List<EdgeData> Edges = new List<EdgeData>();
+        public List<FaceData> Faces = new List<FaceData>();
+        public Point3d OriginalLocation { get; private set; }
+        public Point3d Location { get; private set; }
+        public int LocationIndex { get; private set; }
+        public bool IsNaked { get; private set; }
+        public bool IsAdded { get; private set; }
+
+        public void Calculate()
+        {
+            if (IsNaked)
+            {
+                // if Naked, only take the midpoints in account.
+                // Verify?
+                List<Point3d> edgePoints = new List<Point3d>();
+                edgePoints.AddRange(Edges.Select(x => x.Location));
+                edgePoints.Add(OriginalLocation);
+                this.Location = Tools.Average(edgePoints);
+            }
+            else
+            {
+                int valence = this.Faces.Count;
+                RhinoApp.WriteLine("Vertex valence {0}", valence);
+                // Q
+                Point3d faceAverage = Tools.Average(Faces.Select(x => x.Location));
+                // R
+                Point3d edgeAverage = Tools.Average(Edges.Select(x => x.Mid));
+                // P = OriginalLocation
+                this.Location = (faceAverage + edgeAverage * 2 + OriginalLocation * (valence - 3)) / valence;
+            }
+        }
+
+        public void AddToMesh(Mesh m)
+        {
+            if (!IsAdded)
+            {
+                LocationIndex = m.Vertices.Add(this.Location);
+                IsAdded = true;
+            }
+        }
+    }
+
+    class Tools
+    {
+        static public Point3d Average(IEnumerable points)
+        {
+            Point3d average = Point3d.Origin;
+            int count = 0;
+            foreach (Point3d pt in points)
+            {
+                average += pt;
+                count++;
+            }
+            average = average / count;
+            return average;
+        }
+    }
+    // </Custom additional code> 
+}
