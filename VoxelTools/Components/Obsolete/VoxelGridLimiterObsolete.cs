@@ -2,24 +2,27 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Grasshopper.Kernel;
+using StudioAvw.Voxels.Components.VoxelGrid;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
 
-namespace StudioAvw.Voxels.Components.VoxelGrid
+namespace StudioAvw.Voxels.Components.Obsolete
 {
     /// <summary>
     /// Component that adds or removes voxels from a grid to meet a fixed amount of voxels.
+    /// [Obsolete] This script was used in the why factory, but was always a bad idea anyway.
     /// </summary>
-    public class VoxelGridLimiter : GhVoxelComponent
+    public class VoxelGridLimiterObsolete : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public VoxelGridLimiter()
+        public VoxelGridLimiterObsolete()
             : base("VoxelGrid Limit Amount of Voxels", "VoxGridLimit",
                 "Limit the amount of voxels in the grid",
                 "Voxels", "Create")
         {
+           
         }
 
         /// <summary>
@@ -45,23 +48,16 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
-        protected override void SolveInstance(IGH_DataAccess DA)
+        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
+        protected override void SolveInstance(IGH_DataAccess da)
         {
             var vg = default(VoxelGrid3D);
-            DA.GetData(0, ref vg);
+            da.GetData(0, ref vg);
 
             vg = (VoxelGrid3D) vg.Clone();
-            //VoxelGrid vge = default(VoxelGrid);
-            //DA.GetData<VoxelGrid>(1, ref vge);
-
-            //if (vge == default(VoxelGrid))
-            //{
-               var vge = new VoxelGrid3D(vg.BBox, vg.VoxelSize);
-            //}
 
             var i = 0;
-            DA.GetData(2, ref i);
+            da.GetData(2, ref i);
 
             if (vg.CountNonZero > i)
             {
@@ -69,36 +65,32 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                 
             } else if (vg.CountNonZero < i)
             {
-                IncreaseGrid(ref vg, vge, i);
+                IncreaseGrid(ref vg, i);
             }
             AddRenderGrid(vg);
-            DA.SetData(0, vg);
+            da.SetData(0, vg);
         }
 
-        private void IncreaseGrid(ref VoxelGrid3D vg, VoxelGrid3D Exclusion, int count)
+        private void IncreaseGrid(ref VoxelGrid3D vg, int count)
         {
             var trueCount = vg.CountNonZero;
-            var roof = new VoxelGrid3D(vg.BBox, vg.VoxelSize);
-            var tr = new Point3i(0, 0, 1);
             var possibleLocations = new List<int>();
             var foundRoof = false;
-            for (var z = vg.SizeUVW.z - 1; z >= 0; z--)
+            for (var z = vg.SizeUVW.Z - 1; z >= 0; z--)
             {
-                if (foundRoof == true)
+                if (foundRoof)
                 {
                     break;
                 }
 
-                for (var y = 0; y < vg.SizeUVW.y; y++)
+                for (var y = 0; y < vg.SizeUVW.Y; y++)
                 {
-                    for (var x = 0; x < vg.SizeUVW.x; x++)
+                    for (var x = 0; x < vg.SizeUVW.X; x++)
                     {
                         var pt = new Point3i(x, y, z);
-                        if (vg[pt] == true)
-                        {
-                            foundRoof = true;
-                            possibleLocations.Add(vg.SizeUVW ^ pt);
-                        }
+                        if (vg[pt] != true) continue;
+                        foundRoof = true;
+                        possibleLocations.Add(Point3i.PointUvwToIndex(vg.SizeUVW, pt));
                     }
                 }
             }
@@ -109,7 +101,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             // then add x voxels to each location.
 
             var difference = count - trueCount;
-            var height = Convert.ToInt32(Math.Floor((double) (difference / possibleLocations.Count)));
+            var height = Convert.ToInt32(Math.Floor((double)difference / possibleLocations.Count));
             var rest = difference % possibleLocations.Count;
 
             for (var i = 0; i < possibleLocations.Count; i++)
@@ -124,7 +116,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                 for (var j = 1; j <= makeheight; j++)
                 {
                     var pt = new Point3i(0, 0, j);
-                    var position = (vg.SizeUVW % possibleLocations[i]) + pt;
+                    var position = Point3i.IndexToPointUvw(vg.SizeUVW, possibleLocations[i]) + pt;
                     vg[position] = true;
                 }
             }
@@ -133,7 +125,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             {
                 // the grid is empty / reaches to the roof.
                 // add from the bottom.
-                IncreaseGridFromBottom(ref vg, Exclusion, count);
+                IncreaseGridFromBottom(ref vg, count);
             }
             
 
@@ -143,16 +135,15 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// Add voxels to the grid building up from the bottom to the top.
         /// </summary>
         /// <param name="vg">VoxelGrid</param>
-        /// <param name="Exclusion">VoxelGrid with elements not working.</param>
         /// <param name="count">Amount of voxels to be added.</param>
-        private void IncreaseGridFromBottom(ref VoxelGrid3D vg, VoxelGrid3D Exclusion, int count)
+        private void IncreaseGridFromBottom(ref VoxelGrid3D vg, int count)
         {
             var trueIncCount = vg.CountNonZero;
-            for (var z = 0; z < vg.SizeUVW.z; z++)
+            for (var z = 0; z < vg.SizeUVW.Z; z++)
             {
-                for (var y = 0; y < vg.SizeUVW.y; y++)
+                for (var y = 0; y < vg.SizeUVW.Y; y++)
                 {
-                    for (var x = 0; x < vg.SizeUVW.x; x++)
+                    for (var x = 0; x < vg.SizeUVW.X; x++)
                     {
                         var pt = new Point3i(x, y, z);
                         if (vg[pt] == false)
@@ -169,17 +160,17 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             }
         }
 
-        private void LimitGrid(ref VoxelGrid3D vg, int i)
+        private static void LimitGrid(ref VoxelGrid3D vg, int i)
         {
             // limit, start with Z size.
             var trueCount = vg.CountNonZero;
-            for (var z = vg.SizeUVW.z - 1; z >= 0; z--)
+            for (var z = vg.SizeUVW.Z - 1; z >= 0; z--)
             {
-                for (var y = 0; y < vg.SizeUVW.y; y++)
+                for (var y = 0; y < vg.SizeUVW.Y; y++)
                 {
-                    for (var x = 0; x < vg.SizeUVW.x; x++)
+                    for (var x = 0; x < vg.SizeUVW.X; x++)
                     {
-                        if (vg[new Point3i(x, y, z)] == true)
+                        if (vg[new Point3i(x, y, z)])
                         {
                             vg[new Point3i(x, y, z)] = false;
                             trueCount--;
@@ -192,6 +183,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                 }
             }
         }
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         /// <summary>
         /// Provides an Icon for the component.
