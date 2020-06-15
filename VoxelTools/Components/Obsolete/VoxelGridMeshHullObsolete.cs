@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Grasshopper.Kernel;
-using Grasshopper.Kernel.Parameters;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
-using StudioAvw.Voxels.Param;
 using StudioAvw.Voxels.Helper;
+using StudioAvw.Voxels.Param;
 
-namespace StudioAvw.Voxels.Components.VoxelGrid
+namespace StudioAvw.Voxels.Components.Obsolete
 {
     /// <summary>
     /// Create a voxelgrid mesh hull describing the outer hull of the voxel grid
     /// </summary>
-    public class VoxelGridMeshHull : GH_Component
+    public class VoxelGridMeshHullObsolete : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public VoxelGridMeshHull()
+        public VoxelGridMeshHullObsolete()
             : base("VoxelGrid To Mesh Hull", "VoxMeshHull",
                 "Generate a mesh of a Voxelgrid",
                 "Voxels", "Analysis")
@@ -31,8 +30,6 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Param_VoxelGrid());
-            pManager.AddBooleanParameter("Fake Shadow", "FS", "Add fake shadow to the mesh, it can help to visualize the grid.",
-                GH_ParamAccess.item, false);
         }
 
         /// <summary>
@@ -53,18 +50,15 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
-        protected override void SolveInstance(IGH_DataAccess da)
+        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
+        protected override void SolveInstance(IGH_DataAccess DA)
         {
             /*
              * todo: select mesh box or simple box
              */
-            bool fakeShadow = false;
             var vg = default(VoxelGrid3D);
-            da.GetData(0, ref vg);
-            da.GetData(1, ref fakeShadow);
+            DA.GetData(0, ref vg);
 
-            var meshes = new List<Mesh>();
             if (vg == null || !vg.IsValid)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The (input) voxelgrid was invalid");
@@ -72,6 +66,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             }
 
             var m = VoxelGridMeshHelper.VoxelGridToMesh(vg);
+            var meshes = new List<Mesh> ();
             try
             {
                 meshes = VoxelGridMeshHelper.VoxelGridToMeshByPlanes(vg);
@@ -80,25 +75,14 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             {
                 throw new Exception($"Creating multiple meshes failed: {e.ToString()}");
             }
-
-            if (fakeShadow)
-            {
-                VoxelGridMeshHelper.addFakeShadow(ref m, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0, Color.White, Color.Black);
-            }
-            
-            da.SetData(0, m);
+            VoxelGridMeshHelper.addFakeShadow(ref m, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0, Color.White, Color.Black);
+            DA.SetData(0, m);
 
             if (meshes.Count == 6)
             {
                 for (var i = 1; i <= meshes.Count; i++)
                 {
-                    var mesh = meshes[i - 1];
-                    if (fakeShadow)
-                    {
-                        VoxelGridMeshHelper.addFakeShadow(ref mesh, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0,
-                            Color.White, Color.Black);
-                    }
-                    da.SetData(i, mesh);
+                    DA.SetData(i, meshes[i - 1]);
                 }
             }
             else
@@ -120,6 +104,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("{2C2E9FB7-2018-4F5E-BDA9-C56A171709F0}");
+        public override Guid ComponentGuid => new Guid("{E99F9A6C-2568-40B4-9AE8-73423442BA96}");
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
     }
 }
