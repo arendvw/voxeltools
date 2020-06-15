@@ -90,5 +90,10 @@ namespace StudioAvw.Voxels.Geometry
         }
 
         #endregion Methods
+
+        public bool PointInGrid(Point3i subPt)
+        {
+            return !(subPt < Point3i.Origin || subPt >= SizeUVW);
+        }
     }
 }

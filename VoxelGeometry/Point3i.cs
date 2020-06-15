@@ -17,15 +17,18 @@ namespace StudioAvw.Voxels.Geometry
         /// <summary>
         /// X Value of point
         /// </summary>
-        public short x;
+        public short X { get; set; }
         /// <summary>
         /// Y value of point
         /// </summary>
-        public short y;
+        public short Y { get; set; }
         /// <summary>
         /// Z value of point
         /// </summary>
-        public short z;
+        public short Z { get; set; }
+
+        public static Point3i Origin { get; } = new Point3i(0, 0, 0);
+
         /// <summary>
         /// Value of dimension iDim
         /// </summary>
@@ -38,11 +41,11 @@ namespace StudioAvw.Voxels.Geometry
                 switch (iDim)
                 {
                     case 0:
-                        return x;
+                        return X;
                     case 1:
-                        return y;
+                        return Y;
                     case 2:
-                        return z;
+                        return Z;
                     default:
                         throw new IndexOutOfRangeException("Point3i has a maximum size of 3");
                 }
@@ -52,13 +55,13 @@ namespace StudioAvw.Voxels.Geometry
                 switch (iDim)
                 {
                     case 0:
-                        x = (short) value;
+                        X = (short) value;
                         break;
                     case 1:
-                        y = (short) value;
+                        Y = (short) value;
                         break;
                     case 2:
-                        z = (short) value;
+                        Z = (short) value;
                         break;
                     default:
                         throw new IndexOutOfRangeException("Point3i has a maximum size of 3");
@@ -78,7 +81,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns>Difference between pt1 and pt2 in integers</returns>
         public static Point3i operator -(Point3i p1, Point3i p2)
         {
-            return new Point3i(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
+            return new Point3i(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
         }
 
         /// <summary>
@@ -89,7 +92,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static Point3i operator +(Point3i p1, Point3i p2)
         {
-            return new Point3i(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
+            return new Point3i(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public bool Equals(Point3i p)
         {
-            return x == p.x && y == p.y && z == p.z;
+            return X == p.X && Y == p.Y && Z == p.Z;
         }
 
         /// <summary>
@@ -108,7 +111,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         internal bool IsPositive()
         {
-            return x >= 0 && y >= 0 && z >= 0;
+            return X >= 0 && Y >= 0 && Z >= 0;
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         internal bool IsPositiveNonZero()
         {
-            return x > 0 && y > 0 && z > 0;
+            return X > 0 && Y > 0 && Z > 0;
         }
 
         /// <summary>
@@ -126,9 +129,9 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="p"></param>
         public Point3i(Point3d p)
         {
-            x = (short)Math.Round(p.X);
-            y = (short)Math.Round(p.Y);
-            z = (short)Math.Round(p.Z);
+            X = (short)Math.Round(p.X);
+            Y = (short)Math.Round(p.Y);
+            Z = (short)Math.Round(p.Z);
         }
 
         /// <summary>
@@ -141,9 +144,9 @@ namespace StudioAvw.Voxels.Geometry
             {
                 throw new Exception("Vector size should be 3 elements");
             }
-            x = (short)vector[0];
-            y = (short)vector[1];
-            z = (short)vector[2];
+            X = (short)vector[0];
+            Y = (short)vector[1];
+            Z = (short)vector[2];
         }
 
         /// <summary>
@@ -154,7 +157,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="z"></param>
         public Point3i(short x, short y, short z)
         {
-            this.x = x; this.y = y; this.z = z;
+            X = x; Y = y; Z = z;
         }
 
         /// <summary>
@@ -166,9 +169,9 @@ namespace StudioAvw.Voxels.Geometry
         public Point3i(object x, object y, object z)
         {
             // TODO: Complete member initialization
-            this.x = Convert.ToInt16(x);
-            this.y = Convert.ToInt16(y);
-            this.z = Convert.ToInt16(z);
+            X = Convert.ToInt16(x);
+            Y = Convert.ToInt16(y);
+            Z = Convert.ToInt16(z);
         }
 
         /// <summary>
@@ -177,7 +180,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public int SelfProduct()
         {
-            return x * y * z;
+            return X * Y * Z;
         }
 
         /// <summary>
@@ -186,7 +189,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public int[] ToArray()
         {
-            return new int[3] { x, y, z };
+            return new int[] { X, Y, Z };
         }
 
         /// <summary>
@@ -196,7 +199,7 @@ namespace StudioAvw.Voxels.Geometry
         [Obsolete]
         public int ToInt()
         {
-            return x * y * z;
+            return X * Y * Z;
         }
 
         /// <summary>
@@ -205,16 +208,17 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public Point3d ToPoint3D()
         {
-            return new Point3d(x, y, z);
+            return new Point3d(X, Y, Z);
         }
 
         /// <summary>
         /// Convert to Point3f
         /// </summary>
         /// <returns></returns>
+        // ReSharper disable once InconsistentNaming
         public Point3f ToPoint3f()
         {
-            return new Point3f(x, y, z);
+            return new Point3f(X, Y, Z);
         }
 
         /// <summary>
@@ -223,8 +227,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public override string ToString()
         {
-
-            return string.Format("{{0},{1},{2}}", x, y, z);
+            return $"[{X},{Y},{Z}]";
         }
 
         /// <summary>
@@ -233,7 +236,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public Vector3d ToVector3D()
         {
-            return new Vector3d(x, y, z);
+            return new Vector3d(X, Y, Z);
         }
 
 		#endregion Methods 
@@ -247,7 +250,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static Point3d operator *(Point3i p1, double f)
         {
-            return new Point3d(p1.x *f, p1.y * f, p1.z * f);
+            return new Point3d(p1.X *f, p1.Y * f, p1.Z * f);
         }
 
         /// <summary>
@@ -258,12 +261,11 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static Point3i operator *(Point3i p1, int i)
         {
-            return new Point3i(p1.x * i, p1.y * i, p1.z * i);
+            return new Point3i(p1.X * i, p1.Y * i, p1.Z * i);
         }
 
 
         /// <summary>
-        /// Calculate the 
         /// Assume Point3i is a vector describing the size of a 3-dimensional matrix with size x,y,z
         /// and Pt is a vector describing a x,y,z location in this 3 dimensional nmatrix.  
         /// All points in this matrix can be enumerated to one list of integer numbers (0... size.x*size.y*.size.z)
@@ -274,10 +276,24 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="size">Size of matrix in x,y,z</param>
         /// <param name="pt">Point in this matrix</param>
         /// <returns></returns>
+        [Obsolete("This method has been renamed to Point3i.PointUvwToIndex")]
         public static int operator ^(Point3i size, Point3i pt)
         {
-            
-            return size.z * size.y * pt.x + size.z * pt.y + pt.z;
+            return size.Z * size.Y * pt.X + size.Z * pt.Y + pt.Z;
+        }
+
+        /// <summary>
+        /// Each cell in this grid has a number, the highest number is calculated by cellCount.x*cellCount.y*.cellCount.z)
+        /// This method calculates at which number belongs to pointUvw
+        /// 
+        /// This is a 3 dimensions calculation. See also Tools.VectorMatrix method for an n-dimensional implementation
+        /// </summary>
+        /// <param name="cellCount">Describing the size of a 3-dimensional matrix with cell count x,y,z</param>
+        /// <param name="pointUvw">vector describing a u, v, w location in this 3 dimensional grid.  </param>
+        /// <returns></returns>
+        public static int PointUvwToIndex(Point3i cellCount, Point3i pointUvw)
+        {
+            return cellCount.Z * cellCount.Y * pointUvw.X + cellCount.Z * pointUvw.Y + pointUvw.Z;
         }
 
         /// <summary>
@@ -287,9 +303,15 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="pt"></param>
         /// <param name="item"></param>
         /// <returns></returns>
+        [Obsolete("This method has been renamed to Point3i.IndexToPointUvw")]
         public static Point3i operator % (Point3i pt, int item)
         {
-            return new Point3i(MatrixHelper.MatrixVector(item, pt.ToArray()));
+            return IndexToPointUvw(pt, item);
+        }
+
+        public static Point3i IndexToPointUvw(Point3i gridDimensions, int index)
+        {
+            return new Point3i(MatrixHelper.MatrixVector(index, gridDimensions.ToArray()));
         }
 
         /// <summary>
@@ -300,7 +322,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static bool operator >(Point3i p1, Point3i p2)
         {
-            return p1.x > p2.x || p1.y > p2.y || p1.z > p2.z;
+            return p1.X > p2.X || p1.Y > p2.Y || p1.Z > p2.Z;
         }
 
         /// <summary>
@@ -311,7 +333,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static bool operator >=(Point3i p1, Point3i p2)
         {
-            return p1.x >= p2.x || p1.y >= p2.y || p1.z >= p2.z;
+            return p1.X >= p2.X || p1.Y >= p2.Y || p1.Z >= p2.Z;
         }
 
         /// <summary>
@@ -322,7 +344,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static bool operator <(Point3i p1, Point3i p2)
         {
-            return p1.x < p2.x || p1.y < p2.y || p1.z < p2.z;
+            return p1.X < p2.X || p1.Y < p2.Y || p1.Z < p2.Z;
         }
 
         /// <summary>
@@ -333,7 +355,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public static bool operator <=(Point3i p1, Point3i p2)
         {
-            return p1.x <= p2.x || p1.y <= p2.y || p1.z <= p2.z;
+            return p1.X <= p2.X || p1.Y <= p2.Y || p1.Z <= p2.Z;
         }
         #endregion operators
     }

@@ -66,7 +66,7 @@ namespace StudioAvw.Voxels.Geometry
 
         private Point3i _sizeUvw = new Point3i(0, 0, 0);
         /// <summary>
-        /// Get or set the size of the grid.
+        /// Get or set the size (amount of cells) of the grid.
         /// </summary>
         public Point3i SizeUVW
         {
@@ -167,37 +167,36 @@ namespace StudioAvw.Voxels.Geometry
         public abstract TValue GetValue(int voxelIndex);
 
         /// <summary>
-        /// Get value of point at location ptVx
+        /// Get value of point at location pointUvw
         /// </summary>
-        /// <param name="ptVx"></param>
+        /// <param name="pointUvw"></param>
         /// <returns></returns>
-        public TValue GetValue(Point3i ptVx)
+        public TValue GetValue(Point3i pointUvw)
         {
-            return GetValue(SizeUVW ^ ptVx);
+            return GetValue(Point3i.PointUvwToIndex(SizeUVW, pointUvw));
         }
 
         /// <summary>
-        /// Pointses the in box.
+        /// Get a list of points inside a bounding box
         /// </summary>
         /// <param name="bb">The bb.</param>
         /// <returns></returns>
-        public List<Point3i> PointsInBox(BoundingBox bb)
+        public IEnumerable<Point3i> PointsInBox(BoundingBox bb)
         {
             var pts = new List<Point3i>();
             bb.Inflate(VoxelSize.X * 2, VoxelSize.Y * 2, VoxelSize.Z * 2);
             var min = ClosestPoint(bb.Min);
             var max = ClosestPoint(bb.Max);
-            for (int iX = Math.Max(min.x, (short)0); iX <= Math.Min(max.x, SizeUVW.x); iX++)
+            for (int iX = Math.Max(min.X, (short)0); iX <= Math.Min(max.X, SizeUVW.X); iX++)
             {
-                for (int iY = Math.Max(min.y, (short)0); iY <= Math.Min(max.y, SizeUVW.y); iY++)
+                for (int iY = Math.Max(min.Y, (short)0); iY <= Math.Min(max.Y, SizeUVW.Y); iY++)
                 {
-                    for (int iZ = Math.Max(min.z, (short)0); iZ <= Math.Min(max.z, SizeUVW.z); iZ++)
+                    for (int iZ = Math.Max(min.Z, (short)0); iZ <= Math.Min(max.Z, SizeUVW.Z); iZ++)
                     {
-                        pts.Add(new Point3i(iX, iY, iZ));
+                        yield return new Point3i(iX, iY, iZ);
                     }
                 }
             }
-            return pts;
         }
 
         /// <summary>
@@ -223,11 +222,11 @@ namespace StudioAvw.Voxels.Geometry
         /// <summary>
         /// Gets World coordinates for UVW coordinate
         /// </summary>
-        /// <param name="iUvw">Voxel number</param>
+        /// <param name="voxelIndex">Voxel number</param>
         /// <returns></returns>
-        public Point3d EvaluatePoint(int iUvw)
+        public Point3d EvaluatePoint(int voxelIndex)
         {
-            return EvaluatePoint(SizeUVW % iUvw);
+            return EvaluatePoint(Point3i.IndexToPointUvw(SizeUVW, voxelIndex));
         }
 
         /// <summary>
@@ -263,18 +262,18 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public Point3d EvaluatePoint(int indexUvw, Plane pln)
         {
-            return EvaluatePoint(SizeUVW % indexUvw, pln);
+            return EvaluatePoint(Point3i.IndexToPointUvw(SizeUVW, indexUvw), pln);
         }
 
 
         /// <summary>
-        /// Set voxel at grid location ptVx
+        /// Set voxel at grid location pointUvw
         /// </summary>
-        /// <param name="ptVx"></param>
+        /// <param name="pointUvw"></param>
         /// <param name="value"></param>
-        public void SetValue(Point3i ptVx, TValue value)
+        public void SetValue(Point3i pointUvw, TValue value)
         {
-            SetValue(SizeUVW ^ ptVx, value);
+            SetValue(Point3i.PointUvwToIndex(SizeUVW, pointUvw), value);
         }
 
         /// <summary>
@@ -292,9 +291,9 @@ namespace StudioAvw.Voxels.Geometry
         {
             if (!IsValid)
             {
-                return $"Invalid VoxelGrid [{SizeUVW.x},{SizeUVW.y},{SizeUVW.z}={SizeUVW.SelfProduct()}]";
+                return $"Invalid VoxelGrid [{SizeUVW.X},{SizeUVW.Y},{SizeUVW.Z}={SizeUVW.SelfProduct()}]";
             }
-            return $"VoxelGrid [{SizeUVW.x},{SizeUVW.y},{SizeUVW.z}={SizeUVW.SelfProduct()}]";
+            return $"VoxelGrid [{SizeUVW.X},{SizeUVW.Y},{SizeUVW.Z}={SizeUVW.SelfProduct()}]";
             /*
             return String.Format("VoxelGrid [{0},{1},{2}={3}] with Cell Size [{4.0},{5.0},{6.0}] with {7} Voxels",
                 this.Size.x, this.Size.y, this.Size.z, this.Size.selfProduct(),
@@ -347,7 +346,7 @@ namespace StudioAvw.Voxels.Geometry
         #endregion Methods
 
         /// <summary>
-        /// Get value of voxel at location ptVx
+        /// Get value of voxel at location pointUvw
         /// </summary>
         /// <param name="ptVx">x,y,z location of voxel</param>
         /// <returns></returns>

@@ -13,7 +13,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <summary>
         /// Create empty bit grid
         /// </summary>
-        public BitGrid3D() : base() { }
+        public BitGrid3D() { }
 
 		#endregion Constructors 
 
@@ -33,7 +33,7 @@ namespace StudioAvw.Voxels.Geometry
                 }
                 for (var i = 0; i < Grid.Count; i++)
                 {
-                    if (GetValue(i) == true)
+                    if (GetValue(i))
                     {
                         count++;
                     }
@@ -96,22 +96,12 @@ namespace StudioAvw.Voxels.Geometry
         /// 
         public sbyte GetRelativePointValue(int voxelIndex, Point3i relativePosition)
         {
-            var pt = (SizeUVW % voxelIndex) + relativePosition;
+            var pt = (Point3i.IndexToPointUvw(SizeUVW, voxelIndex)) + relativePosition;
             if (new Point3i(0, 0, 0) > pt || pt >= SizeUVW)
             {
-                return (sbyte)-1;
+                return -1;
             }
-            else
-            {
-                if (GetValue(pt))
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            return GetValue(pt) ? (sbyte)1 : (sbyte)0;
         }
 
         /// <summary>
@@ -139,7 +129,6 @@ namespace StudioAvw.Voxels.Geometry
         /// Set values to the result of an OR operation with grid bt
         /// </summary>
         /// <param name="bt"></param>
-        [Obsolete]
         public void Or(BitGrid3D bt)
         {
             if (bt.Count != Count)
@@ -161,15 +150,13 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="value"></param>
         public void SetRelativePointValue(int voxelIndex, Point3i relativePosition, bool value)
         {
-            var pt = (SizeUVW % voxelIndex) + relativePosition;
+            var pt = Point3i.IndexToPointUvw(SizeUVW, voxelIndex) + relativePosition;
             if (new Point3i(0, 0, 0) > pt || pt >= SizeUVW)
             {
                 return;
             }
-            else
-            {
-                this[pt] = value;
-            }
+
+            this[pt] = value;
         }
 
         /// <summary>
@@ -179,6 +166,10 @@ namespace StudioAvw.Voxels.Geometry
         /// <param name="value"></param>
         public override void SetValue(int voxelIndex, bool value)
         {
+            if (voxelIndex >= Grid.Count || voxelIndex < 0)
+            {
+                return;
+            }
             Grid.Set(voxelIndex, value);
         }
 
@@ -200,27 +191,6 @@ namespace StudioAvw.Voxels.Geometry
                     this[i] = false;
                 }
             }
-        }
-
-        /// <summary>
-        /// The amount of true voxels in the grid
-        /// </summary>
-        /// <returns></returns>
-        public int VoxelCount()
-        {
-            if (!IsValid)
-            {
-                return -1;
-            }
-            var count = 0;
-            for (var i = 0; i < Grid.Count; i++)
-            {
-                if (this[i])
-                {
-                    count++;
-                }
-            }
-            return count;
         }
 
         /// <summary>

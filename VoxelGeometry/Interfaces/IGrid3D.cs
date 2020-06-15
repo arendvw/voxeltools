@@ -14,6 +14,6 @@ namespace StudioAvw.Voxels.Geometry.Interfaces
         Point3d VoxelSize { get; }
         Point3d EvaluatePoint(Point3d ptUVW);
         Point3d EvaluatePoint(Point3i ptUvw);
-        Point3d EvaluatePoint(int iUvw);
+        Point3d EvaluatePoint(int voxelIndex);
     }
 }

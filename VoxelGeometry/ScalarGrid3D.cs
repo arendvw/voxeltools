@@ -50,20 +50,17 @@ namespace StudioAvw.Voxels.Geometry
         /// <summary>
         /// Get the value of of a voxel relative to voxel with number i
         /// </summary>
-        /// <param name="iVx">The voxel number to get a relative position for</param>
-        /// <param name="ptRelVx"></param>
+        /// <param name="voxelIndex">The voxel number to get a relative position for</param>
+        /// <param name="relativeVoxel">Relative coordinates to the voxel, e.g. (1,0,0) for a voxel to the right</param>
         /// <returns>The value of the relative voxel</returns>
-        public float GetRelativePointValue(int iVx, Point3i ptRelVx)
+        public float GetRelativePointValue(int voxelIndex, Point3i relativeVoxel)
         {
-            var pt = (SizeUVW % iVx) + ptRelVx;
+            var pt = Point3i.IndexToPointUvw(SizeUVW, voxelIndex) + relativeVoxel;
             if (new Point3i(0, 0, 0) > pt || pt >= SizeUVW)
             {
                 return float.NaN;
             }
-            else
-            {
-                return GetValue(pt);
-            }
+            return GetValue(pt);
         }
 
         // calculate planes: foreach plane in the grid find the nodes and connect them.
@@ -76,7 +73,7 @@ namespace StudioAvw.Voxels.Geometry
         /// <returns></returns>
         public override object Clone()
         {
-            var vg = new ScalarGrid3D(this.BBox, VoxelSize);
+            var vg = new ScalarGrid3D(BBox, VoxelSize);
             for (var i = 0; i < Count; i++)
             {
                 vg[i] = this[i];
