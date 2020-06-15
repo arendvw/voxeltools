@@ -65,30 +65,34 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="VoxelToolsAssemblyInfo.cs" />
     <Compile Include="Components\PixelGrid\PixelGridPixelateComponent.cs" />
     <Compile Include="Components\PixelGrid\PixelGridCreateComponent.cs" />
     <Compile Include="Components\PixelGrid\PixelGridToList.cs" />
     <Compile Include="Components\PixelGrid\PixelGridMesh.cs" />
-    <Compile Include="Components\ScalarGrid\GH_ScalarComponent.cs" />
+    <Compile Include="Components\ScalarGrid\BaseScalarComponent.cs" />
     <Compile Include="Components\ScalarGrid\ScalarGridAddBrepComponent.cs" />
     <Compile Include="Components\ScalarGrid\ScalarGridCreateComponent.cs" />
     <Compile Include="Components\ScalarGrid\ScalarGridVisualizeComponent.cs" />
     <Compile Include="Components\ScalarGrid\ScalarGridMarchingCubesHull.cs" />
-    <Compile Include="Components\VoxelGrid\GH_VoxelComponent.cs" />
+    <Compile Include="Components\Upgrades\UpgradeMeshHull.cs" />
+    <Compile Include="Components\Upgrades\UpgradeVoxelGridToBoxes.cs" />
+    <Compile Include="Components\VoxelGrid\BaseVoxelComponent.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridAccessibleRoof.cs" />
-    <Compile Include="Components\VoxelGrid\VoxelGridVoxelateComponent.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridBoxes.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridMeshHull.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridDimensions.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridVoxelateGeometry.cs" />
+    <Compile Include="Components\Obsolete\VoxelGridBoxesObsolete.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridCreateComponent.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridExclusive.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridFromHex.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridFromList.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridIntersect.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridInvert.cs" />
-    <Compile Include="Components\VoxelGrid\VoxelGridJoin.cs" />
-    <Compile Include="Components\VoxelGrid\VoxelGridLimiter.cs" />
+    <Compile Include="Components\VoxelGrid\VoxelGridUnion.cs" />
+    <Compile Include="Components\Obsolete\VoxelGridLimiterObsolete.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridMarchingCubesHull.cs" />
-    <Compile Include="Components\VoxelGrid\VoxelGridMeshHull.cs" />
+    <Compile Include="Components\Obsolete\VoxelGridMeshHullObsolete.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridStatistics.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridSubtract.cs" />
     <Compile Include="Components\VoxelGrid\VoxelGridToHex.cs" />
@@ -99,10 +103,11 @@
       <DependentUpon>Images.resx</DependentUpon>
     </Compile>
     <Compile Include="Param\Param_PixelGrid.cs" />
-    <None Include="Tools\CutmallClark.csnc" />
-    <Compile Include="Tools\DataAccessHelper.cs" />
-    <Compile Include="Tools\GeometryHelper.cs" />
-    <Compile Include="Tools\PixelGridMeshHelper.cs" />
+    <Compile Include="Helper\DocumentHelper.cs" />
+    <Compile Include="VoxelToolsInfo.cs" />
+    <Compile Include="Helper\DataAccessHelper.cs" />
+    <Compile Include="Helper\GeometryHelper.cs" />
+    <Compile Include="Helper\PixelGridMeshHelper.cs" />
     <Compile Include="Types\GH_PixelGrid.cs" />
     <Compile Include="Param\Param_ScalarGrid.cs" />
     <Compile Include="Param\Param_VoxelGrid.cs" />
@@ -111,16 +116,22 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Tools\ByteHelper.cs" />
-    <Compile Include="Tools\BrepHelper.cs" />
-    <Compile Include="Tools\ComponentHelper.cs" />
-    <Compile Include="Tools\VoxelGridMeshHelper.cs" />
-    <Compile Include="Tools\RenderHelper.cs" />
+    <Compile Include="Helper\ByteHelper.cs" />
+    <Compile Include="Helper\BrepHelper.cs" />
+    <Compile Include="Helper\ComponentHelper.cs" />
+    <Compile Include="Helper\VoxelGridMeshHelper.cs" />
+    <Compile Include="Helper\RenderHelper.cs" />
     <Compile Include="Types\GH_ScalarGrid.cs" />
     <Compile Include="Types\GH_VoxelGrid.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Icons\Source\box.AI" />
+    <None Include="Icons\Source\intersect.AI" />
+    <None Include="Icons\Source\intersect2.AI" />
+    <None Include="Icons\Source\intersect3.AI" />
+    <None Include="Icons\Source\ScalarTools.ai" />
+    <None Include="Icons\Source\VoxelTools.ai" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -169,31 +180,10 @@
     <None Include="Icons\VT_PointCloud.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_ConstructFromList.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\ScalarTools\ST_CreateGrid.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\ScalarTools\ST_Decompose.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridDifference.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridIntersect.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridInverse.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridToList.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridUnion.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ScalarTools\ST_GridXOR.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\ScalarTools\ST_PointCloud.png" />
@@ -241,6 +231,15 @@
     <PackageReference Include="RhinoCommon">
       <Version>5.12.50810.13095</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="Icons\VT_Boxes.png" />
+    <Content Include="Icons\VT_GridFromHex.png" />
+    <Content Include="Icons\VT_GridToHex.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tools\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

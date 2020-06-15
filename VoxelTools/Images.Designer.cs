@@ -193,6 +193,16 @@ namespace StudioAvw.Voxels {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap VT_Boxes {
+            get {
+                object obj = ResourceManager.GetObject("VT_Boxes", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap VT_ConstructFromList {
             get {
                 object obj = ResourceManager.GetObject("VT_ConstructFromList", resourceCulture);
@@ -233,6 +243,16 @@ namespace StudioAvw.Voxels {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap VT_GridFromHex {
+            get {
+                object obj = ResourceManager.GetObject("VT_GridFromHex", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap VT_GridIntersect {
             get {
                 object obj = ResourceManager.GetObject("VT_GridIntersect", resourceCulture);
@@ -246,6 +266,16 @@ namespace StudioAvw.Voxels {
         public static System.Drawing.Bitmap VT_GridInverse {
             get {
                 object obj = ResourceManager.GetObject("VT_GridInverse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap VT_GridToHex {
+            get {
+                object obj = ResourceManager.GetObject("VT_GridToHex", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
