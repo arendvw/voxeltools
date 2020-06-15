@@ -10,13 +10,13 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Join to voxelgrids together
     /// </summary>
-    public class VoxelGridJoin : GhVoxelComponent
+    public class VoxelGridUnion : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
         /// </summary>
-        public VoxelGridJoin()
-            : base("VoxelGrid Boolean Join", "VGJoin",
+        public VoxelGridUnion()
+            : base("VoxelGrid Boolean Union", "VGUnion",
                 "Join multiple grids",
                 "Voxels", "Boolean")
         {
@@ -27,7 +27,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// </summary>
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
-            pManager.AddParameter(new Param_VoxelGrid(), "Grids", "G", "The grids for the intersection operations", GH_ParamAccess.list);
+            pManager.AddParameter(new Param_VoxelGrid(), "Grids", "G", "The grids for the union operation", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -35,17 +35,17 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// </summary>
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new Param_VoxelGrid(), "Grids", "G", "The grids for the intersection operations", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_VoxelGrid(), "Grids", "G", "The merged grid", GH_ParamAccess.item);
         }
 
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
-        protected override void SolveInstance(IGH_DataAccess DA)
+        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
+        protected override void SolveInstance(IGH_DataAccess da)
         {
             var grids = new List<VoxelGrid3D> ();
-            DA.GetDataList(0, grids);
+            da.GetDataList(0, grids);
             if (grids.Count == 0)
             {
                 return;
@@ -68,7 +68,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                     }
                 }
             }
-            DA.SetData(0, outGrid);
+            da.SetData(0, outGrid);
             AddRenderGrid(outGrid);
         }
 

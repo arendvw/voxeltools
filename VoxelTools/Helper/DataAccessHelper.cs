@@ -1,13 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Types;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     static class DataAccessHelper
     {
-        /// <summary>
+        internal static void AddEnumOptionsToParam<T>(Param_Integer cfParam)
+        {
+            foreach (int cfType in Enum.GetValues(typeof(T)))
+            {
+                var name = Enum.GetName(typeof(T), cfType);
+                cfParam.AddNamedValue(name, cfType);
+            }
+        }
+
+            /// <summary>
         /// Fetch data at index position
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -7,7 +7,7 @@ using System.Linq;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     /// <summary>
     /// ByteHelper helps serialize object to a reduced bytearray and back

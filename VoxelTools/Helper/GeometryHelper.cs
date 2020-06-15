@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Grasshopper.Kernel.Types;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     class GeometryHelper
     {
@@ -10,6 +10,7 @@ namespace StudioAvw.Voxels.Tools
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="geometry"></param>
+        /// <param name="removeWhenFound"></param>
         /// <returns></returns>
         public static Dictionary<int,T> TryCastGeometry<T>(Dictionary<int,IGH_GeometricGoo> geometry, bool removeWhenFound)
         {

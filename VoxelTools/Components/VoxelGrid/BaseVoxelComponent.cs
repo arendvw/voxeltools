@@ -13,14 +13,14 @@ using Rhino;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Geometry.Interfaces;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 namespace StudioAvw.Voxels.Components.VoxelGrid
 {
     /// <summary>
     /// Abstract voxelcomponent, implements voxelgrid rendering.
     /// </summary>
-    public abstract class GhVoxelComponent : GH_Component
+    public abstract class BaseVoxelComponent : GH_Component
     {
         /// <summary>
         /// Voxel Component constructor, refer to the parent
@@ -30,7 +30,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <param name="description"></param>
         /// <param name="category"></param>
         /// <param name="subCategory"></param>
-        public GhVoxelComponent(string name, string nickname, string description, string category, string subCategory) : base(name, nickname, description, category, subCategory)
+        public BaseVoxelComponent(string name, string nickname, string description, string category, string subCategory) : base(name, nickname, description, category, subCategory)
         {
         }
 

@@ -4,7 +4,7 @@ using System.Drawing;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     /// <summary>
     /// Provides mesh helper classes, to convert voxelgrids to meshes.
@@ -39,7 +39,7 @@ namespace StudioAvw.Voxels.Tools
               };
 
             // the sizes of the faces
-            FaceSizes = new double[3] { vg.SizeUVW.x, vg.SizeUVW.y, vg.SizeUVW.z };
+            FaceSizes = new double[3] { vg.SizeUVW.X, vg.SizeUVW.Y, vg.SizeUVW.Z };
 
             var m = new Mesh();
             for (var i = 0; i < vg.Count; i++)
@@ -96,7 +96,7 @@ namespace StudioAvw.Voxels.Tools
               };
 
             // the sizes of the faces
-            FaceSizes = new double[3] { vg.SizeUVW.x, vg.SizeUVW.y, vg.SizeUVW.z };
+            FaceSizes = new double[3] { vg.SizeUVW.X, vg.SizeUVW.Y, vg.SizeUVW.Z };
 
             for (var i = 0; i < vg.Count; i++)
             {

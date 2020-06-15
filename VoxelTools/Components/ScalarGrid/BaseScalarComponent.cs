@@ -6,7 +6,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
     /// Provides abstract functionality for all Scalar comonents
     /// Currently only extends GH_Component
     /// </summary>
-    public abstract class GH_ScalarComponent : GH_Component
+    public abstract class BaseScalarComponent : GH_Component
     {
         // just pass it along
         /// <summary>
@@ -17,7 +17,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
         /// <param name="description"></param>
         /// <param name="category"></param>
         /// <param name="subCategory"></param>
-        public GH_ScalarComponent(string name, string nickname, string description, string category, string subCategory) : base(name, nickname, description, category, subCategory)
+        public BaseScalarComponent(string name, string nickname, string description, string category, string subCategory) : base(name, nickname, description, category, subCategory)
         {
         }
     }

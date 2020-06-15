@@ -4,7 +4,7 @@ using System.Drawing;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     public static class PixelGridMeshHelper
     {

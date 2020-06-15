@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Grasshopper.Kernel;
 
-namespace StudioAvw.Voxels.Tools
+namespace StudioAvw.Voxels.Helper
 {
     class ComponentHelper
     {
