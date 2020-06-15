@@ -5,8 +5,7 @@ using GH_IO.Serialization;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Rhino.Geometry;
-using StudioAvw.Voxels.Geometry;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Types;
 
 namespace StudioAvw.Voxels.Param
@@ -14,6 +13,7 @@ namespace StudioAvw.Voxels.Param
     /// <summary>
     /// The input / output options of a voxelgrid
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class Param_VoxelGrid : GH_PersistentParam<GH_VoxelGrid>, IGH_PreviewObject//, IDisposable
     {
         /// <summary>
@@ -21,7 +21,7 @@ namespace StudioAvw.Voxels.Param
         /// Defines the name, description and where it is placed in the Voxelgrid
         /// </summary>
         public Param_VoxelGrid()
-            : base(new GH_InstanceDescription("VoxelGrid Param", "VG", "Represents a collection of VoxelGrids", "Voxels", "Param"))
+            : base(new GH_InstanceDescription("VoxelGrid", "VG", "A collection of voxelgrids", "Voxels", "Param"))
         {
         }
 
@@ -68,7 +68,6 @@ namespace StudioAvw.Voxels.Param
         private List<Line> _dottedLineCache = new List<Line>();
         private List<Mesh> _meshCache = new List<Mesh>();
         private BoundingBox _bboxCache = BoundingBox.Empty;
-        private bool _hidden = false;
 
         public BoundingBox ClippingBox => _bboxCache;
 
@@ -76,23 +75,28 @@ namespace StudioAvw.Voxels.Param
         {
             try
             {
-                ensureMeshCache();
+                EnsureMeshCache();
 
                 foreach (var m in _meshCache)
                 {
                     args.Display.DrawMeshFalseColors(m);
                 }
-            } catch { }
+            }
+            catch
+            {
+                // ignore
+            }
 
         }
 
-        private bool _hasMeshCache = false;
-        private void ensureMeshCache()
+        private bool _hasMeshCache;
+        private void EnsureMeshCache()
         {
             
-            if (_hasMeshCache == true) { return; };
-            foreach (GH_VoxelGrid vg in m_data.AllData(true))
+            if (_hasMeshCache) { return; }
+            foreach (var ghGoo in m_data.AllData(true))
             {
+                var vg = (GH_VoxelGrid) ghGoo;
                 var m = VoxelGridMeshHelper.VoxelGridToMesh(vg.Value);
                 _bboxCache.Union(vg.Value.BBox.BoundingBox);
                 VoxelGridMeshHelper.addFakeShadow(ref m, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0, Color.White, Color.Black);
@@ -105,16 +109,18 @@ namespace StudioAvw.Voxels.Param
         {
             try
             {
-                ensureLineCache();
+                EnsureLineCache();
                 GH_PreviewWireArgs e;
 
                 if (Attributes.GetTopLevel.Selected)
                 {
-                    e = new GH_PreviewWireArgs(args.Viewport, args.Display, args.WireColour_Selected, args.DefaultCurveThickness);
+                    e = new GH_PreviewWireArgs(args.Viewport, args.Display, args.WireColour_Selected,
+                        args.DefaultCurveThickness);
                 }
                 else
                 {
-                    e = new GH_PreviewWireArgs(args.Viewport, args.Display, args.WireColour, args.DefaultCurveThickness);
+                    e = new GH_PreviewWireArgs(args.Viewport, args.Display, args.WireColour,
+                        args.DefaultCurveThickness);
                 }
 
                 args.Display.DrawLines(_lineCache, e.Color);
@@ -130,30 +136,30 @@ namespace StudioAvw.Voxels.Param
                 }
 
             }
-            catch { }
+            catch
+            {
+                // ignore preview errors..
+            }
         }
 
-        public bool Hidden
-        {
-            get => _hidden;
-            set => _hidden = value;
-        }
+        public bool Hidden { get; set; }
 
         public bool IsPreviewCapable => true;
 
         /// <summary>
         /// 
         /// </summary>
-        private bool _hasLineCache = false;
+        private bool _hasLineCache;
 
         /// <summary>
         /// 
         /// </summary>
-        private void ensureLineCache ()
+        private void EnsureLineCache ()
         {
-            if (_hasLineCache == true) { return; };
-            foreach (GH_VoxelGrid grid in m_data.AllData(true))
+            if (_hasLineCache) { return; }
+            foreach (var ghGoo in m_data.AllData(true))
             {
+                var grid = (GH_VoxelGrid) ghGoo;
                 RenderHelper.GenerateGridPreviewLines(grid.Value, out var dottedLines, out var lines);
                 _dottedLineCache.AddRange(dottedLines);
                 _lineCache.AddRange(lines);
@@ -212,7 +218,7 @@ namespace StudioAvw.Voxels.Param
                 }
                 return true;
             } catch (Exception e) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e.ToString() + " " + e.StackTrace.ToString());
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e + " " + e.StackTrace);
                 return true;
             }
         }
@@ -237,7 +243,7 @@ namespace StudioAvw.Voxels.Param
                 SetPersistentData(data);
                 return true;
             } catch (Exception e) {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e.ToString() + " " + e.StackTrace.ToString());
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e + " " + e.StackTrace);
                 return true;
             }
         }

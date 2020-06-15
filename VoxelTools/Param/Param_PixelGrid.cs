@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Types;
 
 namespace StudioAvw.Voxels.Param
@@ -11,6 +11,7 @@ namespace StudioAvw.Voxels.Param
     /// <summary> 
     /// Scalargrid Param
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public class Param_PixelGrid : GH_PersistentParam<GH_PixelGrid>
     {
         /// <summary>
@@ -32,7 +33,7 @@ namespace StudioAvw.Voxels.Param
         {
             try
             {
-                ensureMeshCache();
+                EnsureMeshCache();
 
                 foreach (var m in _meshCache)
                 {
@@ -43,24 +44,20 @@ namespace StudioAvw.Voxels.Param
 
         }
 
-        private bool _hidden = false;
-        public bool Hidden
-        {
-            get => _hidden;
-            set => _hidden = value;
-        }
+        public bool Hidden { get; set; } = false;
 
         public bool IsPreviewCapable => true;
 
         private List<Mesh> _meshCache;
         private BoundingBox _bboxCache;
         private bool _hasMeshCache = false;
-        private void ensureMeshCache()
+        private void EnsureMeshCache()
         {
 
             if (_hasMeshCache == true) { return; };
-            foreach (GH_PixelGrid pg in m_data.AllData(true))
+            foreach (var ghGoo in m_data.AllData(true))
             {
+                var pg = (GH_PixelGrid) ghGoo;
                 var m = pg.Value.GenerateMesh(Color.Black, Color.White);
                 _bboxCache.Union(pg.Value.BBox.BoundingBox);
                 _meshCache.Add(m);
@@ -118,6 +115,6 @@ namespace StudioAvw.Voxels.Param
         /// <summary>
         /// Show in main bar
         /// </summary>
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
     }
 }

@@ -15,7 +15,7 @@ namespace StudioAvw.Voxels.Param
         /// Provides a gh_param for a scalar grid
         /// </summary>
         public Param_ScalarGrid()
-            : base(new GH_InstanceDescription("ScalarGrid", "SG", "Represents a collection of Scalar Grids", "Voxels", "Parameter"))
+            : base(new GH_InstanceDescription("ScalarGrid", "SG", "Represents a collection of Scalar Grids", "Voxels", "Param"))
         {
         }
 
@@ -51,7 +51,7 @@ namespace StudioAvw.Voxels.Param
         /// <summary>
         /// Icon of a pointcloud
         /// </summary>
-        protected override Bitmap Icon => Images.VT_PointCloud;
+        protected override Bitmap Icon => Images.ST_PointCloud;
 
         /// <summary>
         /// Show in main bar
