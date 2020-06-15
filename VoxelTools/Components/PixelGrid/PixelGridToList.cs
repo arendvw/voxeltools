@@ -6,14 +6,15 @@ using Rhino.Geometry;
 using StudioAvw.Voxels.Components.VoxelGrid;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 namespace StudioAvw.Voxels.Components.PixelGrid
 {
     /// <summary>
     /// Enumerate the voxel grid
+    /// WARNING: This is an experiment without any useful application
     /// </summary>
-    public class PixelGridToList : GhVoxelComponent
+    public class PixelGridToList : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
@@ -21,7 +22,7 @@ namespace StudioAvw.Voxels.Components.PixelGrid
         public PixelGridToList()
             : base("PixelGridToList", "PGList",
                 "Decompose a Voxel Grid to a Boolean List",
-                "Pixel", "Analysis")
+                "Pixels", "Analysis")
         {
         }
 
@@ -46,10 +47,10 @@ namespace StudioAvw.Voxels.Components.PixelGrid
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
-        protected override void SolveInstance(IGH_DataAccess DA)
+        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
+        protected override void SolveInstance(IGH_DataAccess da)
         {
-            var pg = DA.Fetch<PixelGrid2D>(0);
+            var pg = da.Fetch<PixelGrid2D>(0);
 
 
             var values = new List<bool>();
@@ -65,9 +66,9 @@ namespace StudioAvw.Voxels.Components.PixelGrid
                 values.Add(pg.ValueAt(i));
                 location.Add(pg.PointAt(i));
             }
-            DA.SetDataList(0, values);
-            DA.SetDataList(1, location);
-            DA.SetData(2, pg.BBox);
+            da.SetDataList(0, values);
+            da.SetDataList(1, location);
+            da.SetData(2, pg.BBox);
         }
 
         /// <summary>
@@ -82,5 +83,7 @@ namespace StudioAvw.Voxels.Components.PixelGrid
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid => new Guid("{C04D2F2F-71B9-4A68-9617-5DA396BEDE2A}");
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
     }
 }

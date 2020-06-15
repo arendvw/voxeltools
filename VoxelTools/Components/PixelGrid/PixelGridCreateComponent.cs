@@ -5,15 +5,16 @@ using Rhino.Geometry;
 using StudioAvw.Voxels.Components.VoxelGrid;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Types;
 
 namespace StudioAvw.Voxels.Components.PixelGrid
 {
     /// <summary>
     /// Create a voxelgrid from any type of geometry
+    /// WARNING: This is an experiment without any useful application
     /// </summary>
-    public class PixelGridCreateComponent : GhVoxelComponent
+    public class PixelGridCreateComponent : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the PixelGridCreate class.
@@ -75,5 +76,7 @@ namespace StudioAvw.Voxels.Components.PixelGrid
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid => new Guid("{AEA8BCDD-CE5B-4FEC-8902-500C8F0218FB}");
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
     }
 }

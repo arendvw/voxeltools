@@ -6,13 +6,14 @@ using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Types;
 
 namespace StudioAvw.Voxels.Components.PixelGrid
 {
     /// <summary>
     /// Add brep to the voxelgrid
+    /// WARNING: This is an experiment without any useful application
     /// </summary>
     public class PixelGridPixelateComponent : GH_Component
     {
@@ -142,5 +143,7 @@ namespace StudioAvw.Voxels.Components.PixelGrid
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid => new Guid("{B646EB8C-7FC4-4880-88B4-307BACD4B77C}");
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
     }
 }
