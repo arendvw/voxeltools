@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// GH Component to subtract grid A from grid B
     /// </summary>
-    public class VoxelGridSubtract : GhVoxelComponent
+    public class VoxelGridSubtract : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.

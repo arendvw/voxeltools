@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// GH Component to intersect two voxelgrids
     /// </summary>
-    public class VoxelGridIntersect : GhVoxelComponent
+    public class VoxelGridIntersect : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.

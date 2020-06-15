@@ -5,7 +5,7 @@ using System.Drawing;
 using Grasshopper.Kernel;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 #endregion
 
@@ -14,7 +14,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
   /// <summary>
   /// Convert voxelgrid to hexadecimal number
   /// </summary>
-  public class VoxelGridHex : GhVoxelComponent
+  public class VoxelGridHex : BaseVoxelComponent
   {
     /// <summary>
     /// Initializes a new instance of the VoxelGridIntersect class.
@@ -23,7 +23,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     public VoxelGridHex()
       : base("VoxelGrid To Hex String", "VGToHex",
         "Convert a voxelgrid to a hexadecimal string",
-        "Voxels", "Boolean")
+        "Voxels", "Input/Output")
     {
     }
 
@@ -33,7 +33,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     protected override Bitmap Icon =>
         //You can add image files to your project resources and access them like this:
         // return Resources.IconForThisComponent;
-        Images.VT_GridToList;
+        Images.VT_GridToHex;
 
     /// <summary>
     ///   Gets the unique ID for this component. Do not change this ID after release.
@@ -57,7 +57,6 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     protected override void RegisterOutputParams(GH_OutputParamManager pManager)
     {
       pManager.AddTextParameter("Hex", "H", "Hexadecimal string describing the grid", GH_ParamAccess.item);
-      pManager.AddBrepParameter("B", "B", "LALALALAL", GH_ParamAccess.item);
     }
 
     /// <summary>

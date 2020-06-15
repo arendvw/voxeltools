@@ -9,7 +9,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// invert the voxelgrid
     /// </summary>
-    public class VoxelGridInvert : GhVoxelComponent
+    public class VoxelGridInvert : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.

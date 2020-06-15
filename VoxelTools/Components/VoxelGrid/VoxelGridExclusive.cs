@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Exclusive OR (XOR) operation for two grids. Remove overlapping parts.
     /// </summary>
-    public class VoxelGridExclusive : GhVoxelComponent
+    public class VoxelGridExclusive : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.

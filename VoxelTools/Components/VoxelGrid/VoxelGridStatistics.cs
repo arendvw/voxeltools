@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Get numerical statistics about the voxel grid
     /// </summary>
-    public class VoxelGridStatistics : GhVoxelComponent
+    public class VoxelGridStatistics : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.

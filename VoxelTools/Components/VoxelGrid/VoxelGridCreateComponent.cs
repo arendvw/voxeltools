@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Create a voxelgrid from any type of geometry
     /// </summary>
-    public class VoxelGridCreateComponent : GhVoxelComponent
+    public class VoxelGridCreateComponent : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridCreate class.

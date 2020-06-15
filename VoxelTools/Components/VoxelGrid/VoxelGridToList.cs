@@ -11,13 +11,13 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Enumerate the voxel grid
     /// </summary>
-    public class VoxelGridToList : GhVoxelComponent
+    public class VoxelGridToList : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
         /// </summary>
         public VoxelGridToList()
-            : base("VoxelGridToList", "VGList",
+            : base("VoxelGrid To List", "VGList",
                 "Decompose a Voxel Grid to a Boolean List",
                 "Voxels", "Analysis")
         {

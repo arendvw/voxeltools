@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using Grasshopper.Kernel;
+using Rhino;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
@@ -11,13 +11,13 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// 
     /// </summary>
-    public class VoxelGridMarchingCubesHull : GhVoxelComponent
+    public class VoxelGridMarchingCubesHull : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
         /// </summary>
         public VoxelGridMarchingCubesHull()
-            : base("VoxelGrid Hull from Marching Cubes", "VGMarchingCubes",
+            : base("Hull from Marching Cubes", "MarchingCubes",
                 "Generate hull using the marching cubes algorithm",
                 "Voxels", "Analysis")
         {
@@ -29,7 +29,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Param_VoxelGrid(), "Grids", "G", "The grid to mesh using marching cubes", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Isolevel", "I", "The isolevel for the grid (typically between 0 and 1)", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Isolevel", "I", "The isolevel for the grid between 0 and 1", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -38,36 +38,48 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
             pManager.AddMeshParameter("Mesh", "M", "Marching cube output", GH_ParamAccess.item);
-            //pManager.AddIntegerParameter("cubeindex", "ci", "bla", GH_ParamAccess.list);
         }
 
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
-        protected override void SolveInstance(IGH_DataAccess DA)
+        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
+        protected override void SolveInstance(IGH_DataAccess da)
         {
             try
             {
                 var vg = default(VoxelGrid3D);
                 double isolevel = 0.5f;
-                DA.GetData(0, ref vg);
-                DA.GetData(1, ref isolevel);
-                var values = new List<bool>();
+                da.GetData(0, ref vg);
+                da.GetData(1, ref isolevel);
                 if (vg == null || !vg.IsValid)
                 {
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The (input) voxelgrid was invalid");
                     return;
                 }
+
+                if (isolevel < 0)
+                {
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "The iso level should be larger than 0 and smaller than 1");
+                }
+
+                isolevel = Math.Max(isolevel, RhinoMath.ZeroTolerance);
+
+                if (isolevel > 1)
+                {
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "The iso level should be larger than 0 and smaller than 1");
+                    isolevel = 1;
+                }
+
                 var m = new Mesh();
                 // increase the grid with one pixel; so we actually start at a negative point;
-                var Size = vg.SizeUVW + new Point3i(1, 1, 1);
+                var size = vg.SizeUVW + new Point3i(1, 1, 1);
                 //List<int> cubeindexlist = new List<int>();
-                for (var i = 0; i < Size.SelfProduct(); i++)
+                for (var i = 0; i < size.SelfProduct(); i++)
                 {
                     //this.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Test: " + i.ToString());
                     var pts = new Point3i[8];
-                    pts[0] = (Size % i);
+                    pts[0] = Point3i.IndexToPointUvw(size, i);
                     pts[1] = pts[0] + new Point3i(1, 0, 0);
                     pts[2] = pts[0] + new Point3i(1, 1, 0);
                     pts[3] = pts[0] + new Point3i(0, 1, 0);
@@ -83,32 +95,32 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                     {
                         var gridpt = pts[j] - new Point3i(1, 1, 1);
 
-                        if ((!(new Point3i(0, 0, 0) > gridpt || gridpt >= vg.SizeUVW)) && vg[gridpt])
+                        if (!(new Point3i(0, 0, 0) > gridpt || gridpt >= vg.SizeUVW) && vg[gridpt])
                         {
                             val[j] = 1.0f;
                         } else 
                         {
                             val[j] = 0.0f;
                         }
-                        sum = sum + val[j];
+                        sum += val[j];
                     }
 
                     // non homogeneus
-                    if (sum != 0 && sum != 8)
+                    if (Math.Abs(sum) > RhinoMath.ZeroTolerance && Math.Abs(sum - 8) > RhinoMath.ZeroTolerance)
                     {
-                        Polygonise(vg, pts, val, Convert.ToSingle(isolevel), ref m, out var cubeindex);
+                        Polygonise(vg, pts, val, Convert.ToSingle(isolevel), ref m, out _);
                     }
                     //cubeindexlist.Add(cubeindex);
 
                 }
                 m.Normals.ComputeNormals();
                 m.Compact();
-                DA.SetData(0, m);
+                da.SetData(0, m);
                 //DA.SetDataList(1, cubeindexlist);
             }
             catch (Exception e)
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e.ToString() + e.StackTrace.ToString());
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e + e.StackTrace);
             }
         }
 
@@ -135,62 +147,60 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             if (val[7] < isolevel) cubeindex |= 128;
 
             /* Cube is entirely in/out of the surface */
-            if (EdgeTable[cubeindex] == 0)
+            if (_edgeTable[cubeindex] == 0)
             {
                 return 0;
             }
             var vertlist = new Point3d[12];
             /* Find the vertices where the surface intersects the cube */
-            if ((EdgeTable[cubeindex] & 1)==1)
+            if ((_edgeTable[cubeindex] & 1)==1)
                 vertlist[0] =
                    VertexInterp(isolevel, points[0], points[1], val[0], val[1]);
-            if ((EdgeTable[cubeindex] & 2) == 2)
+            if ((_edgeTable[cubeindex] & 2) == 2)
                 vertlist[1] =
                    VertexInterp(isolevel, points[1], points[2], val[1], val[2]);
-            if ((EdgeTable[cubeindex] & 4) == 4)
+            if ((_edgeTable[cubeindex] & 4) == 4)
                 vertlist[2] =
                    VertexInterp(isolevel, points[2], points[3], val[2], val[3]);
-            if ((EdgeTable[cubeindex] & 8) == 8)
+            if ((_edgeTable[cubeindex] & 8) == 8)
                 vertlist[3] =
                    VertexInterp(isolevel, points[3], points[0], val[3], val[0]);
-            if ((EdgeTable[cubeindex] & 16) == 16)
+            if ((_edgeTable[cubeindex] & 16) == 16)
                 vertlist[4] =
                    VertexInterp(isolevel, points[4], points[5], val[4], val[5]);
-            if ((EdgeTable[cubeindex] & 32) == 32)
+            if ((_edgeTable[cubeindex] & 32) == 32)
                 vertlist[5] =
                    VertexInterp(isolevel, points[5], points[6], val[5], val[6]);
-            if ((EdgeTable[cubeindex] & 64) == 64)
+            if ((_edgeTable[cubeindex] & 64) == 64)
                 vertlist[6] =
                    VertexInterp(isolevel, points[6], points[7], val[6], val[7]);
-            if ((EdgeTable[cubeindex] & 128) == 128)
+            if ((_edgeTable[cubeindex] & 128) == 128)
                 vertlist[7] =
                    VertexInterp(isolevel, points[7], points[4], val[7], val[4]);
-            if ((EdgeTable[cubeindex] & 256)==256)
+            if ((_edgeTable[cubeindex] & 256)==256)
                 vertlist[8] =
                    VertexInterp(isolevel, points[0], points[4], val[0], val[4]);
-            if ((EdgeTable[cubeindex] & 512) == 512)
+            if ((_edgeTable[cubeindex] & 512) == 512)
                 vertlist[9] =
                    VertexInterp(isolevel, points[1], points[5], val[1], val[5]);
-            if ((EdgeTable[cubeindex] & 1024) == 1024)
+            if ((_edgeTable[cubeindex] & 1024) == 1024)
                 vertlist[10] =
                    VertexInterp(isolevel, points[2], points[6], val[2], val[6]);
-            if ((EdgeTable[cubeindex] & 2048) == 2048)
+            if ((_edgeTable[cubeindex] & 2048) == 2048)
                 vertlist[11] =
                    VertexInterp(isolevel, points[3], points[7], val[3], val[7]);
             // evaluate all points between these 8 vertices
 
-            var z = m.Vertices.Count;
-            
 
             /* Create the triangle */
             var vertexCount = m.Vertices.Count;
             var triangles = 0;
-            for (var k = 0; TriTable[cubeindex,k] != -1; k += 3)
+            for (var k = 0; _triTable[cubeindex,k] != -1; k += 3)
             {
                 var facePts = new Point3d[3];
-                facePts[0] = vg.EvaluatePoint(vertlist[TriTable[cubeindex,k]]);
-                facePts[1] = vg.EvaluatePoint(vertlist[TriTable[cubeindex,k + 1]]);
-                facePts[2] = vg.EvaluatePoint(vertlist[TriTable[cubeindex,k + 2]]);
+                facePts[0] = vg.EvaluatePoint(vertlist[_triTable[cubeindex,k]]);
+                facePts[1] = vg.EvaluatePoint(vertlist[_triTable[cubeindex,k + 1]]);
+                facePts[2] = vg.EvaluatePoint(vertlist[_triTable[cubeindex,k + 2]]);
                 m.Vertices.AddVertices(facePts);
                 // perhaps this should be switched around for the right normal direction
                 m.Faces.AddFace(vertexCount, vertexCount + 1, vertexCount + 2);
@@ -237,7 +247,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// The table of edges belonging to the marching cubes algorithm
         /// </summary>
-        int[] EdgeTable = new int[256] {
+        // ReSharper disable once RedundantExplicitArraySize
+        private readonly int[] _edgeTable = new int[256] {
             0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
             0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
             0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -275,7 +286,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// Table of triangles beloning to the maching triangles algorithm
         /// </summary>
-        int[,] TriTable = new int[256,16] 
+        // ReSharper disable once RedundantExplicitArraySize
+        private readonly int[,] _triTable = new int[256,16] 
         {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -545,5 +557,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid => new Guid("{9C588056-00E3-4899-805D-8AECCF05E03E}");
+
+        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+
     }
 }

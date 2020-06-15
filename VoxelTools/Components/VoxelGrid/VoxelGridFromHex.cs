@@ -3,14 +3,14 @@ using System.Drawing;
 using Grasshopper.Kernel;
 using StudioAvw.Voxels.Geometry;
 using StudioAvw.Voxels.Param;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 namespace StudioAvw.Voxels.Components.VoxelGrid
 {
     /// <summary>
     /// Create list of hexadecimal numbers
     /// </summary>
-    public class VoxelGridFromHex : GhVoxelComponent
+    public class VoxelGridFromHex : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
@@ -18,7 +18,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         public VoxelGridFromHex()
             : base("VoxelGrid From Hex String", "VGFromHex",
                 "Convert a voxelgrid from a hexadecimal string",
-                "Voxels", "Boolean")
+                "Voxels", "Input/Output")
         {
         }
 
@@ -57,7 +57,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override Bitmap Icon =>
             //You can add image files to your project resources and access them like this:
             // return Resources.IconForThisComponent;
-            Images.VT_ConstructFromList;
+            Images.VT_GridFromHex;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.

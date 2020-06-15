@@ -10,7 +10,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Create grid from list of booleans
     /// </summary>
-    public class VoxelGridFromList : GhVoxelComponent
+    public class VoxelGridFromList : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
@@ -18,7 +18,7 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         public VoxelGridFromList()
             : base("VoxelGrid From List", "VGList",
                 "Set the voxel values from a list of booleans",
-                "Voxels", "Analysis")
+                "Voxels", "Create")
         {
         }
 
