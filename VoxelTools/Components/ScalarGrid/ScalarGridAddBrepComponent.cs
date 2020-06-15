@@ -4,10 +4,10 @@ using System.Drawing;
 using System.Linq;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
-using Rhino;
 using Rhino.Geometry;
 using Rhino.Geometry.Intersect;
 using StudioAvw.Voxels.Geometry;
+using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Param;
 
 namespace StudioAvw.Voxels.Components.ScalarGrid
@@ -15,12 +15,12 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
     /// <summary>
     /// Voxelize points to a scalar grid
     /// </summary>
-    public class ScalarGridVoxilizeComponent : GH_ScalarComponent
+    public class ScalarGridVoxelateComponent : BaseScalarComponent
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public ScalarGridVoxilizeComponent()
+        public ScalarGridVoxelateComponent()
             : base("Voxelate Geometry into Scalar Grid", "VoxGeoScalar",
                 "Adds any geometry to a Scalar Grid",
                 "Voxels", "Scalar")
@@ -50,9 +50,9 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
+        /// <param name="da">The DA object is used to retrieve from inputs and store in outputs.</param>
 
-        protected override void SolveInstance(IGH_DataAccess DA)
+        protected override void SolveInstance(IGH_DataAccess da)
         {
             try
             {
@@ -65,10 +65,10 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
 
 
                 var vg = default(ScalarGrid3D);
-                DA.GetDataList(0, geometryList);
-                DA.GetData(1, ref vg);
-                DA.GetDataList(2, exponentList);
-                DA.GetDataList(3, massList);
+                da.GetDataList(0, geometryList);
+                da.GetData(1, ref vg);
+                da.GetDataList(2, exponentList);
+                da.GetDataList(3, massList);
 
                 if (exponentList.Count == 0)
                 {
@@ -92,25 +92,9 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
 
                 for (var i = 0; i < geometryList.Count; i++)
                 {
-                    double mass;
-                    if (i >= massList.Count)
-                    {
-                        mass = massList.Last();
-                    }
-                    else
-                    {
-                        mass = massList[i];
-                    }
+                    var mass = i >= massList.Count ? massList.Last() : massList[i];
 
-                    double exponent;
-                    if (i >= exponentList.Count)
-                    {
-                        exponent = exponentList.Last();
-                    }
-                    else
-                    {
-                        exponent = exponentList[i];
-                    }
+                    var exponent = i >= exponentList.Count ? exponentList.Last() : exponentList[i];
 
                     var b = geometryList[i];
 
@@ -147,15 +131,14 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
                     if (b.CastTo(out Point3d oPt))
                     {
                         AddPt(oPt, exponent, mass, ref vg);
-                        continue;
                     }
                 }
 
-                DA.SetData(0, vg);
+                da.SetData(0, vg);
             }
             catch (Exception e)
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e.ToString() + e.StackTrace.ToString());
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, e + e.StackTrace);
             }
         }
 
@@ -208,8 +191,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
                 {
                     var pt = sg.EvaluatePoint(i);
                     var isInside = false;
-                    var faces = new int[0];
-                    Intersection.MeshLine(m, new Line(pt, Vector3d.XAxis, length), out faces);
+                    Intersection.MeshLine(m, new Line(pt, Vector3d.XAxis, length), out var faces);
                     if (faces != null)
                     {
                         isInside = faces.Length % 2 == 1;
@@ -223,12 +205,10 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
                 // add open mesh
                 for (var i = 0; i < sg.Count; i++)
                 {
-                    var faces = new int[0];
-                    var isInside = false;
                     var pt = sg.EvaluatePoint(i);
                     var foundPoint = m.ClosestPoint(pt);
                     var dist = foundPoint.DistanceTo(pt);
-                    sg[i] += CalculateMass(dist, mass, exp, isInside);
+                    sg[i] += CalculateMass(dist, mass, exp, false);
                 }
             }
         }
@@ -370,40 +350,34 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
             var pt2 = vg.EvaluatePoint(new Point3i(1, 0, 0));
             var pln = new Plane(pt1, (pt2 - pt1));
             
-            // currently we NOT have chosen the multitasking ultra parralel option
-            // this should speed up some of the more demanding grids.
-            //System.Threading.Tasks.Parallel.For(0, vg.Size.x, x =>
-            //{
-            for (var x = 0; x < vg.SizeUVW.x; x++)
+            for (var x = 0; x < vg.SizeUVW.X; x++)
             {
                 pln.Origin = vg.EvaluatePoint(new Point3i(x, 0, 0));
-                Intersection.BrepPlane(b, pln, RhinoDoc.ActiveDoc.ModelAbsoluteTolerance, out var sections, out var pts);
+                Intersection.BrepPlane(b, pln, DocumentHelper.GetModelTolerance(), out var sections, out var pts);
                 var surfaces = Brep.CreatePlanarBreps(sections);
 
                 
                 // perhaps check first if the points are inside the bounding box of the surface.
-                if (surfaces != null)
+                if (surfaces == null) continue;
+                for (var y = 0; y < vg.SizeUVW.Y; y++)
                 {
-                    for (var y = 0; y < vg.SizeUVW.y; y++)
+                    for (var z = 0; z < vg.SizeUVW.Z; z++)
                     {
-                        for (var z = 0; z < vg.SizeUVW.z; z++)
+                        var isInside = false;
+                        var pti = new Point3i(x, y, z);
+                        var pt = vg.EvaluatePoint(pti);
+                        var distance = b.ClosestPoint(pt).DistanceTo(pt);
+                        for (var i = 0; i < surfaces.Length; i++)
                         {
-                            var isInside = false;
-                            var pti = new Point3i(x, y, z);
-                            var pt = vg.EvaluatePoint(pti);
-                            var distance = b.ClosestPoint(pt).DistanceTo(pt);
-                            for (var i = 0; i < surfaces.Length; i++)
+                            //BoundingBox bb = surfaces[i].GetBoundingBox(false);
+                            if(surfaces[i].ClosestPoint(pt).DistanceTo(pt) < DocumentHelper.GetModelTolerance())
                             {
-                                //BoundingBox bb = surfaces[i].GetBoundingBox(false);
-                                if(surfaces[i].ClosestPoint(pt).DistanceTo(pt) < RhinoDoc.ActiveDoc.ModelAbsoluteTolerance)
-                                {
-                                    isInside = true;
-                                    break;
-                                }
+                                isInside = true;
+                                break;
                             }
-
-                            vg[pti] =+ CalculateMass(distance, mass, exp, isInside);
                         }
+
+                        vg[pti] =+ CalculateMass(distance, mass, exp, isInside);
                     }
                 }
             }
