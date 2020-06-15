@@ -1,9 +1,9 @@
 ---
 name: VoxelTools
-version: 1.0.13
+version: 1.0.15
 authors:
 - Arend van Waart
 description: Allows usage of Voxel Geometry in Grasshopper
 url: https://github.com/arendvw/ScriptParasite
 secret:
-  id: ca4510da-6cec-401c-8964-18aa571f5e9c
+  id: 43b6cb74-76cb-4047-96fc-e10aea638d3a
