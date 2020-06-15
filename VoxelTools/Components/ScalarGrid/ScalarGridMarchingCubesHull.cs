@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Grasshopper.Kernel;
+using Rhino;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Components.VoxelGrid;
 using StudioAvw.Voxels.Geometry;
@@ -12,7 +13,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
     /// <summary>
     /// Get the hull of a scalar grid using marching cubes (YAY BLOBS)
     /// </summary>
-    public class ScalarGridMarchingCubesHull : GhVoxelComponent
+    public class ScalarGridMarchingCubesHull : BaseVoxelComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridIntersect class.
@@ -60,15 +61,15 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The (input) scalargrid was invalid");
                     return;
                 }
-                var m = new Mesh();
+                var mesh = new Mesh();
                 // increase the grid with one pixel; so we actually start at a negative point;
-                var Size = vg.SizeUVW + new Point3i(1, 1, 1);
+                var gridSize = vg.SizeUVW + new Point3i(1, 1, 1);
                 //List<int> cubeindexlist = new List<int>();
-                for (var i = 0; i < Size.SelfProduct(); i++)
+                for (var i = 0; i < gridSize.SelfProduct(); i++)
                 {
                     //this.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Test: " + i.ToString());
                     var pts = new Point3i[8];
-                    pts[0] = (Size % i);
+                    pts[0] = Point3i.IndexToPointUvw(gridSize, i);
                     pts[1] = pts[0] + new Point3i(1, 0, 0);
                     pts[2] = pts[0] + new Point3i(1, 1, 0);
                     pts[3] = pts[0] + new Point3i(0, 1, 0);
@@ -95,16 +96,16 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
                     }
 
                     // non homogeneus
-                    if (sum != 0 && sum != 8)
+                    if (Math.Abs(sum) > RhinoMath.ZeroTolerance && Math.Abs(sum - 8) > RhinoMath.ZeroTolerance)
                     {
-                        Polygonise(vg, pts, val, Convert.ToSingle(isolevel), ref m, out var cubeindex);
+                        Polygonise(vg, pts, val, Convert.ToSingle(isolevel), ref mesh, out var cubeindex);
                     }
                     //cubeindexlist.Add(cubeindex);
 
                 }
-                m.Normals.ComputeNormals();
-                m.Compact();
-                DA.SetData(0, m);
+                mesh.Normals.ComputeNormals();
+                mesh.Compact();
+                DA.SetData(0, mesh);
                 //DA.SetDataList(1, cubeindexlist);
             }
             catch (Exception e)
@@ -532,9 +533,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
         /// Provides an Icon for the component.
         /// </summary>
         protected override Bitmap Icon =>
-            //You can add image files to your project resources and access them like this:
-            // return Resources.IconForThisComponent;
-            Images.VT_GridToList;
+            Images.ST_PointCloud;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.

@@ -11,7 +11,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
     /// <summary>
     /// Creates a scalar grid
     /// </summary>
-    public class ScalarGridCreateComponent : GH_ScalarComponent
+    public class ScalarGridCreateComponent : BaseScalarComponent
     {
         /// <summary>
         /// Initializes a new instance of the VoxelGridCreate class.
@@ -74,7 +74,7 @@ namespace StudioAvw.Voxels.Components.ScalarGrid
         protected override Bitmap Icon =>
             //You can add image files to your project resources and access them like this:
             // return Resources.IconForThisComponent;
-            Images.VT_CreateGrid;
+            Images.ST_CreateGrid;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
