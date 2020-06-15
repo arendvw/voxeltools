@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Grasshopper.Kernel;
-using Grasshopper.Kernel.Parameters;
-using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
-using StudioAvw.Voxels.Helper;
 using StudioAvw.Voxels.Param;
 
-namespace StudioAvw.Voxels.Components.VoxelGrid
+namespace StudioAvw.Voxels.Components.Obsolete
 {
-
-
     /// <summary>
     /// Converts voxels to their containing boxes
     /// </summary>
-    public class VoxelGridBoxes : GH_Component
+    [Obsolete]
+    public class VoxelGridBoxesObsolete : GH_Component
     {
         /// TODO: Add this class as old/replaced
         /// Add new class that implements the points in a correct way
@@ -27,18 +20,11 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public VoxelGridBoxes()
+        public VoxelGridBoxesObsolete()
             : base("VoxelGrid To Boxes", "VoxBox",
-                "Get a list of boxes from a voxelgrid. Warning: Can severely slow down your computer for large grids.",
+                "Get a list of boxes from a voxelgrid",
                 "Voxels", "Analysis")
         {
-        }
-
-        public enum SelectionType
-        {
-            True = 1,
-            False = 0,
-            All = -1,
         }
 
         /// <summary>
@@ -47,10 +33,6 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Param_VoxelGrid());
-            var param = new Param_Integer();
-            DataAccessHelper.AddEnumOptionsToParam<SelectionType>(param);
-            param.PersistentData.Append(new GH_Integer(1));
-            pManager.AddParameter(new Param_Integer(), "Selection", "S", "0 = all false voxels, 1 = all true voxels (default), -1 = all voxels", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -78,54 +60,26 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The (input) voxelgrid was invalid");
                 return;
             }
-
-            vg = (VoxelGrid3D)vg.Clone();
-
-            int selectionInt = 0;
-            if (!da.GetData(1, ref selectionInt) || selectionInt < -1 || selectionInt > 1)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid selection given, only -1, 0, or 1 are valid values");
-            }
-
-            var type = (SelectionType) selectionInt;
-
-            var boxes = new List<Box>();
+            vg = (VoxelGrid3D) vg.Clone();
+            
+            var boxes = new List<Box> ();
             var values = new List<Point3d>();
 
-            switch (type)
+
+            for (var i = 0; i < vg.SizeUVW.SelfProduct(); i++)
             {
-                case SelectionType.True:
-                    for (var i = 0; i < vg.SizeUVW.SelfProduct(); i++)
-                    {
-                        if (!vg.GetValue(i)) continue;
-
-                        boxes.Add(vg.CreateBox(i));
-                        values.Add(vg.EvaluatePoint(i));
-                    }
-                    break;
-                case SelectionType.False:
-                    for (var i = 0; i < vg.SizeUVW.SelfProduct(); i++)
-                    {
-                        if (vg.GetValue(i)) continue;
-
-                        boxes.Add(vg.CreateBox(i));
-                        values.Add(vg.EvaluatePoint(i));
-                    }
-                    break;
-                case SelectionType.All:
-                    for (var i = 0; i < vg.SizeUVW.SelfProduct(); i++)
-                    {
-                        boxes.Add(vg.CreateBox(i));
-                        values.Add(vg.EvaluatePoint(i));
-                    }
-                    break;
-                default:
-                    // this should never happen, validated above.
-                    throw new ArgumentOutOfRangeException();
+                values.Add(vg.EvaluatePoint(i));
+                if (vg.GetValue(i) == true)
+                {
+                    boxes.Add(vg.CreateBox(i));
+                }
             }
-
             da.SetDataList(0, boxes);
             da.SetDataList(1, values);
+
+
+            // get top faces
+            // get bottom faces
         }
 
         /// <summary>
@@ -134,11 +88,15 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
         protected override Bitmap Icon =>
             //You can add image files to your project resources and access them like this:
             // return Resources.IconForThisComponent;
-            Images.VT_Boxes;
+            Images.VT_Decompose;
+
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("{01E3D92A-DD7D-4A20-B754-20186CC5AC8D}");
+        public override Guid ComponentGuid => new Guid("{d8f14822-91e4-417a-931c-a42455a07361}");
+
     }
 }
