@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using Grasshopper.Kernel;
 
@@ -19,7 +19,7 @@ namespace StudioAvw.Voxels
 
         public override Guid Id => new Guid("43b6cb74-76cb-4047-96fc-e10aea638d3a");
 
-        public override string Version => "1.0.14";
+        public override string Version => "1.0.1";
 
         public override GH_LibraryLicense AssemblyLicense => GH_LibraryLicense.opensource;
 

@@ -9,7 +9,7 @@ $copyToOutput = ".\VoxelTools\bin\VoxelTools.gha",
 ".\VoxelTools\bin\VoxelGeometry.pdb"
 
 # Where is the grasshopper assembly file?
-$grasshopperAssemblyInfofile = "./VoxelTools/VoxelToolsAssemblyInfo.cs";
+$grasshopperAssemblyInfofile = "./VoxelTools/VoxelToolsInfo.cs";
 
 
 ## Functions
