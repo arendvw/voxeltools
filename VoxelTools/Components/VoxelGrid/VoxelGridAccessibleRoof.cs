@@ -14,14 +14,14 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
     /// <summary>
     /// Counts the number of accessible roofs and outputs them in two different lists
     /// </summary>
-    public class VoxelGridRoofs : GhVoxelComponent
+    public class VoxelGridRoofObsolete : BaseVoxelComponent
     {
 		#region Constructors (1) 
 
         /// <summary>
-        /// Initializes a new instance of the VoxelGridRoofs class.
+        /// Initializes a new instance of the VoxelGridRoofObsolete class.
         /// </summary>
-        public VoxelGridRoofs()
+        public VoxelGridRoofObsolete()
             : base("VoxelGrid RoofAccess", "VoxGridRoof",
                 "Check if voxels have accessible roof pixels",
                 "Voxels", "Analysis")
@@ -119,14 +119,14 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
                         hasAccessible.SetRelativePointValue(i, t4, true);
                     }
 
-                  if (accessible)
-                  {
-                    isRoof[i] = true;
-                  }
-                  else
-                  {
-                    accessViaStairs[i] = true;
-                  }
+                    if (accessible)
+                    {
+                        isRoof[i] = true;
+                    }
+                    else
+                    {
+                        accessViaStairs[i] = true;
+                    }
                 }
             }
 
@@ -135,6 +135,8 @@ namespace StudioAvw.Voxels.Components.VoxelGrid
             DA.SetData(2, accessViaStairs);
         }
 
-		#endregion Methods 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
+        #endregion Methods 
     }
 }
