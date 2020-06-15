@@ -12,12 +12,12 @@ Download the VoxelTools.zip, and place it in `%appdata%/components`.
 ## Usage
 
 ### Voxelate geometry
-- Closed mesh [01_closed_mesh.gh](examples/01_closed_mesh.gh)
-- Open Mesh with attractor distance [02_closed_mesh.gh](examples/02_open_mesh.gh)
-- Closed Brep [03_closed_brep.gh](examples/03_closed_brep.gh)
-- Open Brep with attractor distance [04_open_brep.gh](examples/04_open_brep.gh)
-- Curve with attractor distance [05_curve.gh](examples/05_curve.gh)
-- Points with attractor distance [06_points.gh](examples/06_points.gh)
+- Closed mesh [01_closed_mesh.gh](docs/01_closed_mesh.gh)
+- Open Mesh with attractor distance [02_closed_mesh.gh](docs/02_open_mesh.gh)
+- Closed Brep [03_closed_brep.gh](docs/03_closed_brep.gh)
+- Open Brep with attractor distance [04_open_brep.gh](docs/04_open_brep.gh)
+- Curve with attractor distance [05_curve.gh](docs/05_curve.gh)
+- Points with attractor distance [06_points.gh](docs/06_points.gh)
 
 #### Boolean operations
 For grids of the same size, you can do boolean operations. Boolean operations on voxelgrids are very quick and lightweight.
