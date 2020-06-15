@@ -3,7 +3,7 @@ using System.Drawing;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 namespace StudioAvw.Voxels.Types
 {
@@ -48,10 +48,10 @@ namespace StudioAvw.Voxels.Types
             }
             if (!Value.IsValid)
             {
-                return $"Invalid VoxelGrid [{Value.SizeUVW.x},{Value.SizeUVW.y},{Value.SizeUVW.z}]";
+                return $"Invalid VoxelGrid [{Value.SizeUVW.X},{Value.SizeUVW.Y},{Value.SizeUVW.Z}]";
             }
             return
-                $"VoxelGridZ [{Value.SizeUVW.x},{Value.SizeUVW.y},{Value.SizeUVW.z}={Value.SizeUVW.SelfProduct()}] True = {Value.CountNonZero}";
+                $"VoxelGrid [{Value.SizeUVW.X},{Value.SizeUVW.Y},{Value.SizeUVW.Z}={Value.SizeUVW.SelfProduct()}] True = {Value.CountNonZero}";
             
         }
         
@@ -96,7 +96,8 @@ namespace StudioAvw.Voxels.Types
             if (typeof(Q).IsAssignableFrom(typeof(GH_Mesh)))
             {
                 var m = VoxelGridMeshHelper.VoxelGridToMesh(Value);
-                VoxelGridMeshHelper.addFakeShadow(ref m, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0, Color.White, Color.Black);
+                // don't add fake meshes..
+                // VoxelGridMeshHelper.addFakeShadow(ref m, new Vector3d(-0.495633, 0.142501, 0.856762), 1.0, Color.White, Color.Black);
                 var ghm = new GH_Mesh(m);
                 target = (Q)(object)ghm;
                 return true;

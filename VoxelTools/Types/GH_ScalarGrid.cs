@@ -57,9 +57,9 @@ namespace StudioAvw.Voxels.Types
             }
             if (!Value.IsValid)
             {
-                return $"Invalid ScalarGrid [{Value.SizeUVW.x},{Value.SizeUVW.y},{Value.SizeUVW.z}]";
+                return $"Invalid ScalarGrid [{Value.SizeUVW.X},{Value.SizeUVW.Y},{Value.SizeUVW.Z}]";
             }
-            return $"ScalarGrid [{Value.SizeUVW.x},{Value.SizeUVW.y},{Value.SizeUVW.z}={Value.SizeUVW.SelfProduct()}]";
+            return $"ScalarGrid [{Value.SizeUVW.X},{Value.SizeUVW.Y},{Value.SizeUVW.Z}={Value.SizeUVW.SelfProduct()}]";
             
             /*
             return String.Format("VoxelGrid [{0},{1},{2}={3}] with Cell Size [{4.0},{5.0},{6.0}] with {7} Voxels",

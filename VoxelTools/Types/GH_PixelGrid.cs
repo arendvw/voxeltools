@@ -3,7 +3,7 @@ using System.Drawing;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 using StudioAvw.Voxels.Geometry;
-using StudioAvw.Voxels.Tools;
+using StudioAvw.Voxels.Helper;
 
 namespace StudioAvw.Voxels.Types
 {
