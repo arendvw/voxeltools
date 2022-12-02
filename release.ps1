@@ -26,8 +26,9 @@ Maximum visual studio version
 .EXAMPLE
 Find-MsBuild 2015
 #>
-Function Find-MsBuild([int] $MaxVersion = 2019)
+Function Find-MsBuild([int] $MaxVersion = 2022)
 {
+    $communityPath2022 = "$Env:programfiles\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
     $agentPath2019 = "$Env:programfiles (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\msbuild.exe"
     $devPath2019 = "$Env:programfiles (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe"
     $proPath2019 = "$Env:programfiles (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\msbuild.exe"
@@ -40,6 +41,7 @@ Function Find-MsBuild([int] $MaxVersion = 2019)
     $fallback2013Path = "${Env:ProgramFiles(x86)}\MSBuild\12.0\Bin\MSBuild.exe"
     $fallbackPath = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
 
+    If ((2022 -le $MaxVersion) -And (Test-Path $communityPath2022)) { return $communityPath2022 } 
     If ((2019 -le $MaxVersion) -And (Test-Path $agentPath2019)) { return $agentPath2019 } 
     If ((2019 -le $MaxVersion) -And (Test-Path $devPath2019)) { return $devPath2019 } 
     If ((2019 -le $MaxVersion) -And (Test-Path $proPath2019)) { return $proPath2019 } 
