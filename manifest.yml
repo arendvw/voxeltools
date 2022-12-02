@@ -1,6 +1,6 @@
 ---
 name: VoxelTools
-version: 1.0.1
+version: 1.0.3
 authors:
 - Arend van Waart
 description: Allows usage of Voxel Geometry in Grasshopper
