@@ -324,9 +324,9 @@ namespace StudioAvw.Voxels.Geometry
             BBox = boundingBox;
             VoxelSize = voxelDimensions;
 
-            int iX = Convert.ToInt16(Math.Floor(boundingBox.X.Length / voxelDimensions.X));
-            int iY = Convert.ToInt16(Math.Floor(boundingBox.Y.Length / voxelDimensions.Y));
-            int iZ = Convert.ToInt16(Math.Floor(boundingBox.Z.Length / voxelDimensions.Z));
+            int iX = Convert.ToInt16(Math.Ceiling(boundingBox.X.Length / voxelDimensions.X));
+            int iY = Convert.ToInt16(Math.Ceiling(boundingBox.Y.Length / voxelDimensions.Y));
+            int iZ = Convert.ToInt16(Math.Ceiling(boundingBox.Z.Length / voxelDimensions.Z));
 
             var size = new Point3i(iX, iY, iZ);
             SizeUVW = size;
